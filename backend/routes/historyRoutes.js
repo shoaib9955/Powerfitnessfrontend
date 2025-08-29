@@ -1,57 +1,80 @@
 import express from "express";
-import MemberHistory from "../models/historyModel.js";
-import Member from "../models/memberModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import History from "../models/historyModel.js";
+import Member from "../models/memberModel.js";
 
 const router = express.Router();
 
-// Apply auth middleware
+// --- Admin only ---
 router.use(authMiddleware);
 
-// GET all history logs
+// GET all history
 router.get("/", async (req, res) => {
-  if (req.user.role !== "admin")
-    return res.status(403).json({ message: "Forbidden" });
-
   try {
-    const history = await MemberHistory.find()
-      .populate("performedBy", "username role")
-      .sort({ createdAt: -1 });
-    res.json({ message: "History fetched", data: history });
+    if (req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    const histories = await History.find()
+      .populate("performedBy", "name email")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json(histories);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching history", error: err });
+    console.error("GET HISTORY ERROR:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch history", error: err.message });
   }
 });
 
-// DELETE history record
-router.delete("/:id", async (req, res) => {
-  if (req.user.role !== "admin")
-    return res.status(403).json({ message: "Forbidden" });
-
+// DELETE history entry permanently
+router.delete("/delete/:id", async (req, res) => {
   try {
-    await MemberHistory.findByIdAndDelete(req.params.id);
-    res.json({ message: "History deleted successfully" });
+    if (req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    await History.findByIdAndDelete(req.params.id);
+    res.json({ message: "History entry deleted permanently" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting history", error: err });
+    console.error("DELETE HISTORY ERROR:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to delete history", error: err.message });
   }
 });
 
-// RESTORE member from history
+// RESTORE member from history (optional if using separately)
 router.post("/restore/:id", async (req, res) => {
-  if (req.user.role !== "admin")
-    return res.status(403).json({ message: "Forbidden" });
-
   try {
-    const history = await MemberHistory.findById(req.params.id);
-    if (!history) return res.status(404).json({ message: "History not found" });
+    if (req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
 
-    const { _id, ...rest } = history.details; // remove old _id
-    const restored = new Member(rest);
-    await restored.save();
+    const historyEntry = await History.findById(req.params.id);
+    if (!historyEntry)
+      return res.status(404).json({ message: "History not found" });
 
-    res.json({ message: "Member restored successfully", data: restored });
+    const restoredMember = await Member.create({
+      ...historyEntry.details,
+      createdBy: req.user._id,
+    });
+
+    await History.create({
+      memberId: restoredMember._id,
+      action: "Restored",
+      details: restoredMember,
+      performedBy: req.user._id,
+    });
+
+    res.json({
+      message: "Member restored successfully",
+      member: restoredMember,
+    });
   } catch (err) {
-    res.status(500).json({ message: "Error restoring member", error: err });
+    console.error("RESTORE MEMBER FROM HISTORY ERROR:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to restore member", error: err.message });
   }
 });
 

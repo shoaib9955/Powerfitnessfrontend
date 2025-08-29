@@ -9,7 +9,7 @@ import AddMember from "./pages/AddMember";
 import MembersList from "./pages/MembersList";
 import Receipt from "./pages/Receipt";
 import PrivateRoute from "./components/PrivateRoute";
-import MemberHistory from "./pages/HistoryList";
+import MemberHistory from "./pages/History";
 const App = () => {
   const [userRole, setUserRole] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));

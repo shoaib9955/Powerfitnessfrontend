@@ -1,10 +1,16 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const { auth, logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate(); // ✅ hook for navigation
+
+  const handleLogout = () => {
+    logout(); // clear auth context / token
+    navigate("/"); // redirect to home page
+  };
 
   return (
     <nav className="bg-gradient-to-r from-green-400 to-green-700 text-white px-6 py-4 shadow-2xl fixed w-full z-50 backdrop-blur-md">
@@ -31,10 +37,11 @@ const Navbar = () => {
               <li>
                 <Link to="/members">Members List</Link>
               </li>
-              <Link to="/history">Member History</Link>
-
               <li>
-                <button onClick={logout}>Logout</button>
+                <Link to="/history">Member History</Link>
+              </li>
+              <li>
+                <button onClick={handleLogout}>Logout</button>
               </li>
             </>
           )}

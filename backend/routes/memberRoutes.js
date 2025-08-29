@@ -6,6 +6,7 @@ import PDFDocument from "pdfkit";
 import { body, validationResult } from "express-validator";
 
 import Member from "../models/memberModel.js";
+import History from "../models/historyModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { sendEmail } from "../utils/mailer.js";
 
@@ -117,7 +118,15 @@ router.post(
         createdBy: req.user._id,
       });
 
-      res.status(201).json(member); // respond immediately
+      // --- LOG HISTORY ---
+      await History.create({
+        memberId: member._id,
+        action: "Created",
+        details: member.toObject(),
+        performedBy: req.user._id,
+      });
+
+      res.status(201).json(member);
 
       if (email) {
         generateReceiptPDFBuffer(member)
@@ -189,10 +198,21 @@ router.put(
       if (req.user.role !== "admin")
         return res.status(403).json({ message: "Forbidden" });
 
+      const member = await Member.findById(req.params.id);
+      if (!member) return res.status(404).json({ message: "Member not found" });
+
+      // --- LOG HISTORY BEFORE UPDATE ---
+      await History.create({
+        memberId: member._id,
+        action: "Updated",
+        details: member.toObject(),
+        performedBy: req.user._id,
+      });
+
       const update = { ...req.body };
       if (update.amountPaid !== undefined)
-        update.amountPaid = Number(update.amountPaid);
-      if (update.due !== undefined) update.due = Number(update.due);
+        update.amountPaid = Number(update.amountPaid) || 0;
+      if (update.due !== undefined) update.due = Number(update.due) || 0;
 
       if (update.duration) {
         const { expiryDate, expiryDateString } = calcExpiry(update.duration);
@@ -201,18 +221,18 @@ router.put(
       }
 
       if (req.file) {
-        const existing = await Member.findById(req.params.id).select("avatar");
-        if (existing?.avatar)
-          fs.unlink(path.join(uploadsDir, existing.avatar), () => {});
+        if (member.avatar)
+          fs.unlink(path.join(uploadsDir, member.avatar), () => {});
         update.avatar = req.file.filename;
       }
 
-      const member = await Member.findByIdAndUpdate(req.params.id, update, {
-        new: true,
-      });
-      if (!member) return res.status(404).json({ message: "Member not found" });
+      const updatedMember = await Member.findByIdAndUpdate(
+        req.params.id,
+        update,
+        { new: true }
+      );
 
-      res.json(member);
+      res.json(updatedMember);
     } catch (err) {
       console.error("UPDATE MEMBER ERROR:", err);
       res
@@ -228,17 +248,65 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     if (req.user.role !== "admin")
       return res.status(403).json({ message: "Forbidden" });
 
-    const member = await Member.findByIdAndDelete(req.params.id);
+    const member = await Member.findById(req.params.id);
     if (!member) return res.status(404).json({ message: "Member not found" });
+
+    // --- LOG HISTORY BEFORE DELETE ---
+    await History.create({
+      memberId: member._id,
+      action: "Deleted",
+      details: member.toObject(),
+      performedBy: req.user._id,
+    });
 
     if (member.avatar)
       fs.unlink(path.join(uploadsDir, member.avatar), () => {});
+
+    await Member.findByIdAndDelete(member._id);
+
     res.json({ message: "Member deleted successfully" });
   } catch (err) {
     console.error("DELETE MEMBER ERROR:", err);
     res
       .status(500)
       .json({ message: "Failed to delete member", error: err.message });
+  }
+});
+
+/* ----------------------- RESTORE MEMBER ----------------------- */
+router.post("/restore/:historyId", authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    const historyEntry = await History.findById(req.params.historyId);
+    if (!historyEntry)
+      return res.status(404).json({ message: "History not found" });
+
+    const restoredData = { ...historyEntry.details };
+    delete restoredData._id; // <- remove old _id to avoid duplicate
+
+    const restoredMember = await Member.create({
+      ...restoredData,
+      createdBy: req.user._id,
+    });
+
+    await History.create({
+      memberId: restoredMember._id,
+      action: "Restored",
+      details: restoredMember.toObject(),
+      performedBy: req.user._id,
+    });
+
+    res.json({
+      message: "Member restored successfully",
+      member: restoredMember,
+    });
+  } catch (err) {
+    console.error("RESTORE MEMBER FROM HISTORY ERROR:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to restore member", error: err.message });
   }
 });
 

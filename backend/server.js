@@ -11,6 +11,7 @@ import User from "./models/userModel.js";
 import bcrypt from "bcrypt";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import historyRoutes from "./routes/historyRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -34,6 +35,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/members", memberRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/receipts", receiptRoutes);
+app.use("/api/history", historyRoutes);
 
 // -------------------- Admin creation --------------------
 async function ensureAdmin() {
