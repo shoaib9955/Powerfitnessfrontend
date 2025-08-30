@@ -19,15 +19,12 @@ const Login = () => {
         formData
       );
 
-      // Save user info in context & localStorage
+      // Save token and role in context
       login(res.data);
 
       // Redirect based on role
-      if (res.data.role === "admin") {
-        navigate("/add-member");
-      } else {
-        navigate("/"); // normal user goes to home page
-      }
+      if (res.data.role === "admin") navigate("/add-member");
+      else navigate("/");
     } catch (err) {
       console.error(err);
       alert("Login failed: check username/password");

@@ -2,13 +2,13 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import PDFDocument from "pdfkit";
 import { body, validationResult } from "express-validator";
 
 import Member from "../models/memberModel.js";
 import History from "../models/historyModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { sendEmail } from "../utils/mailer.js";
+import { generateStyledReceiptPDF } from "../utils/pdfGenerator.js";
 
 const router = express.Router();
 
@@ -26,7 +26,21 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Helper: calculate expiry
+// Validators
+const memberValidators = [
+  body("name").notEmpty().withMessage("Name is required"),
+  body("phone").notEmpty().withMessage("Phone is required"),
+  body("email").optional().isEmail().withMessage("Invalid email"),
+];
+
+const handleValidation = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return res.status(400).json({ errors: errors.array() });
+  next();
+};
+
+// Helper: calculate expiry date
 const calcExpiry = (duration) => {
   const d = new Date();
   if (duration === "1 Month") d.setMonth(d.getMonth() + 1);
@@ -36,52 +50,10 @@ const calcExpiry = (duration) => {
   return { expiryDate: d, expiryDateString: d.toDateString() };
 };
 
-// Helper: generate PDF in-memory
-const generateReceiptPDFBuffer = (member) =>
-  new Promise((resolve, reject) => {
-    try {
-      const doc = new PDFDocument({ margin: 40 });
-      const chunks = [];
-      doc.on("data", (chunk) => chunks.push(chunk));
-      doc.on("end", () => resolve(Buffer.concat(chunks)));
+// ---------------- ROUTES ----------------
 
-      doc.fontSize(20).text("🏋️ Gym Membership Receipt", { align: "center" });
-      doc.moveDown();
-      doc.fontSize(12);
-      doc.text(`Name: ${member.name}`);
-      doc.text(`Phone: ${member.phone}`);
-      if (member.email) doc.text(`Email: ${member.email}`);
-      doc.text(`Sex: ${member.sex}`);
-      doc.text(`Duration: ${member.duration}`);
-      doc.text(`Amount Paid: ₹${Number(member.amountPaid || 0)}`);
-      doc.text(`Due: ₹${Number(member.due || 0)}`);
-      doc.text(`Expiry Date: ${member.expiryDateString}`);
-      doc.text(
-        `Created At: ${new Date(member.createdAt).toLocaleDateString()}`
-      );
-      doc.text(`Status: ${Number(member.due || 0) > 0 ? "Pending" : "Paid"}`);
-      doc.end();
-    } catch (err) {
-      reject(err);
-    }
-  });
+// Add Member// routes/memberRoutes.js
 
-// Validation rules
-const memberValidators = [
-  body("name").notEmpty().withMessage("Name is required"),
-  body("phone").notEmpty().withMessage("Phone is required"),
-  body("email").optional().isEmail().withMessage("Invalid email"),
-];
-
-// Handle validation errors
-const handleValidation = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty())
-    return res.status(400).json({ errors: errors.array() });
-  next();
-};
-
-/* ----------------------- ADD MEMBER ----------------------- */
 router.post(
   "/",
   authMiddleware,
@@ -118,7 +90,6 @@ router.post(
         createdBy: req.user._id,
       });
 
-      // --- LOG HISTORY ---
       await History.create({
         memberId: member._id,
         action: "Created",
@@ -126,19 +97,24 @@ router.post(
         performedBy: req.user._id,
       });
 
+      // Respond immediately to client
       res.status(201).json(member);
 
+      // Generate PDF and send email in background
       if (email) {
-        generateReceiptPDFBuffer(member)
+        generateStyledReceiptPDF(member)
           .then((buffer) =>
             sendEmail({
               to: email,
-              subject: "Your Gym Membership Receipt",
-              html: `<h3>Hello ${name},</h3><p>Thank you for joining our gym. Your receipt is attached.</p>`,
-              attachments: [{ filename: "receipt.pdf", content: buffer }],
+              subject: "🏋️ PowerFitness Payment Receipt",
+              html: `<p>Hello ${name}, your receipt is attached.</p>`,
+              attachments: [
+                { filename: `receipt-${member._id}.pdf`, content: buffer },
+              ],
             })
           )
-          .catch((err) => console.error("Async email error:", err));
+          .then(() => console.log(`Receipt sent to ${email}`))
+          .catch((err) => console.error("EMAIL ERROR (background):", err));
       }
     } catch (err) {
       console.error("ADD MEMBER ERROR:", err);
@@ -149,12 +125,11 @@ router.post(
   }
 );
 
-/* ----------------------- GET ALL MEMBERS ----------------------- */
+// Get all members
 router.get("/", authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== "admin")
       return res.status(403).json({ message: "Forbidden" });
-
     const members = await Member.find().sort({ createdAt: -1 }).lean();
     res.json(members);
   } catch (err) {
@@ -164,13 +139,13 @@ router.get("/", authMiddleware, async (req, res) => {
       .json({ message: "Failed to fetch members", error: err.message });
   }
 });
-
-/* ----------------------- GET SINGLE MEMBER ----------------------- */
+// GET single member
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const member = await Member.findById(req.params.id).lean();
     if (!member) return res.status(404).json({ message: "Member not found" });
 
+    // Only admin or creator can view
     if (
       req.user.role !== "admin" &&
       String(req.user._id) !== String(member.createdBy)
@@ -185,73 +160,43 @@ router.get("/:id", authMiddleware, async (req, res) => {
       .json({ message: "Failed to fetch member", error: err.message });
   }
 });
+// ---------------- SEND RECEIPT ----------------
+router.post("/:id/send-receipt", authMiddleware, async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.id).lean();
+    if (!member) return res.status(404).json({ message: "Member not found" });
+    if (!member.email)
+      return res.status(400).json({ message: "No email for this member" });
 
-/* ----------------------- UPDATE MEMBER ----------------------- */
-router.put(
-  "/:id",
-  authMiddleware,
-  upload.single("avatar"),
-  memberValidators,
-  handleValidation,
-  async (req, res) => {
-    try {
-      if (req.user.role !== "admin")
-        return res.status(403).json({ message: "Forbidden" });
+    const pdfBuffer = await generateStyledReceiptPDF(member);
 
-      const member = await Member.findById(req.params.id);
-      if (!member) return res.status(404).json({ message: "Member not found" });
+    await sendEmail({
+      to: member.email,
+      subject: "🏋️ PowerFitness Payment Receipt",
+      html: `<p>Hello ${member.name}, your receipt is attached.</p>`,
+      attachments: [
+        { filename: `receipt-${member._id}.pdf`, content: pdfBuffer },
+      ],
+    });
 
-      // --- LOG HISTORY BEFORE UPDATE ---
-      await History.create({
-        memberId: member._id,
-        action: "Updated",
-        details: member.toObject(),
-        performedBy: req.user._id,
-      });
-
-      const update = { ...req.body };
-      if (update.amountPaid !== undefined)
-        update.amountPaid = Number(update.amountPaid) || 0;
-      if (update.due !== undefined) update.due = Number(update.due) || 0;
-
-      if (update.duration) {
-        const { expiryDate, expiryDateString } = calcExpiry(update.duration);
-        update.expiryDate = expiryDate;
-        update.expiryDateString = expiryDateString;
-      }
-
-      if (req.file) {
-        if (member.avatar)
-          fs.unlink(path.join(uploadsDir, member.avatar), () => {});
-        update.avatar = req.file.filename;
-      }
-
-      const updatedMember = await Member.findByIdAndUpdate(
-        req.params.id,
-        update,
-        { new: true }
-      );
-
-      res.json(updatedMember);
-    } catch (err) {
-      console.error("UPDATE MEMBER ERROR:", err);
-      res
-        .status(500)
-        .json({ message: "Failed to update member", error: err.message });
-    }
+    res.json({ message: "Receipt sent successfully!" });
+  } catch (err) {
+    console.error("SEND RECEIPT ERROR:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to send receipt", error: err.message });
   }
-);
-
-/* ----------------------- DELETE MEMBER ----------------------- */
+});
+// DELETE member
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== "admin")
       return res.status(403).json({ message: "Forbidden" });
 
-    const member = await Member.findById(req.params.id);
+    const member = await Member.findById(req.params.id); // ⚠️ Do NOT use .lean()
     if (!member) return res.status(404).json({ message: "Member not found" });
 
-    // --- LOG HISTORY BEFORE DELETE ---
+    // Save snapshot in history
     await History.create({
       memberId: member._id,
       action: "Deleted",
@@ -259,12 +204,10 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       performedBy: req.user._id,
     });
 
-    if (member.avatar)
-      fs.unlink(path.join(uploadsDir, member.avatar), () => {});
+    // Delete member from DB
+    await Member.deleteOne({ _id: member._id }); // safer alternative to .remove()
 
-    await Member.findByIdAndDelete(member._id);
-
-    res.json({ message: "Member deleted successfully" });
+    res.json({ message: "Member deleted successfully", memberId: member._id });
   } catch (err) {
     console.error("DELETE MEMBER ERROR:", err);
     res
@@ -272,42 +215,49 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       .json({ message: "Failed to delete member", error: err.message });
   }
 });
-
-/* ----------------------- RESTORE MEMBER ----------------------- */
-router.post("/restore/:historyId", authMiddleware, async (req, res) => {
+// UPDATE member
+// PUT /api/members/:id
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== "admin")
       return res.status(403).json({ message: "Forbidden" });
 
-    const historyEntry = await History.findById(req.params.historyId);
-    if (!historyEntry)
-      return res.status(404).json({ message: "History not found" });
+    const member = await Member.findById(req.params.id);
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
-    const restoredData = { ...historyEntry.details };
-    delete restoredData._id; // <- remove old _id to avoid duplicate
+    // Ensure req.body exists
+    const body = req.body || {};
 
-    const restoredMember = await Member.create({
-      ...restoredData,
-      createdBy: req.user._id,
-    });
+    // Destructure safely
+    const { name, phone, email, sex, duration, amountPaid, due } = body;
+
+    // Update fields only if provided
+    if (name !== undefined) member.name = name;
+    if (phone !== undefined) member.phone = phone;
+    if (email !== undefined) member.email = email;
+    if (sex !== undefined) member.sex = sex;
+    if (duration !== undefined) member.duration = duration;
+    if (amountPaid !== undefined) member.amountPaid = Number(amountPaid);
+    if (due !== undefined) member.due = Number(due);
+
+    const updatedMember = await member.save();
 
     await History.create({
-      memberId: restoredMember._id,
-      action: "Restored",
-      details: restoredMember.toObject(),
+      memberId: updatedMember._id,
+      action: "Updated",
+      details: updatedMember.toObject(),
       performedBy: req.user._id,
     });
 
-    res.json({
-      message: "Member restored successfully",
-      member: restoredMember,
-    });
+    res.json(updatedMember);
   } catch (err) {
-    console.error("RESTORE MEMBER FROM HISTORY ERROR:", err);
+    console.error("UPDATE MEMBER ERROR:", err);
     res
       .status(500)
-      .json({ message: "Failed to restore member", error: err.message });
+      .json({ message: "Failed to update member", error: err.message });
   }
 });
+
+// Send receipt separately
 
 export default router;

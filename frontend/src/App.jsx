@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -8,11 +8,20 @@ import Login from "./pages/Login";
 import AddMember from "./pages/AddMember";
 import MembersList from "./pages/MembersList";
 import Receipt from "./pages/Receipt";
-import PrivateRoute from "./components/PrivateRoute";
 import MemberHistory from "./pages/History";
+import AdminFeeManagement from "./pages/AdminFeeManagement";
+import FeeStructure from "./pages/FeeStructure";
+import PrivateRoute from "./components/PrivateRoute";
+import Footer from "./components/Footer"; // adjust path if needed
+
 const App = () => {
   const [userRole, setUserRole] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  // optional: load role from localStorage
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role) setUserRole(role);
+  }, []);
 
   return (
     <Router>
@@ -22,11 +31,16 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/history" element={<MemberHistory />} />
-
+        <Route path="/fees" element={<FeeStructure />} />
         <Route
-          path="/login"
-          element={<Login setUserRole={setUserRole} setToken={setToken} />}
+          path="/admin/fees"
+          element={
+            <PrivateRoute role="admin" userRole={userRole}>
+              <AdminFeeManagement />
+            </PrivateRoute>
+          }
         />
+        <Route path="/login" element={<Login setUserRole={setUserRole} />} />
         <Route
           path="/add-member"
           element={
@@ -52,6 +66,8 @@ const App = () => {
           }
         />
       </Routes>
+      {/* Footer at the bottom */}
+      <Footer />
     </Router>
   );
 };

@@ -12,6 +12,7 @@ import bcrypt from "bcrypt";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import historyRoutes from "./routes/historyRoutes.js";
+import feeRoutes from "./routes/feeRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -20,7 +21,8 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -36,6 +38,8 @@ app.use("/api/members", memberRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/history", historyRoutes);
+// Fee routes
+app.use("/api/fees", feeRoutes);
 
 // -------------------- Admin creation --------------------
 async function ensureAdmin() {

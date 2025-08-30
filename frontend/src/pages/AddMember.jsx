@@ -55,15 +55,13 @@ const AddMember = () => {
 
       setMessage({
         type: "success",
-        text: `✅ Member added successfully! Receipt has been emailed to ${
-          res.data.email || "the member"
-        }.`,
+        text: `✅ Member added successfully! Receipt emailed.`,
       });
     } catch (err) {
-      console.error(err);
+      console.error("AddMember Error:", err.response?.data || err.message);
       setMessage({
         type: "error",
-        text: "❌ Failed to add member. Please try again.",
+        text: "❌ Failed to add member or send email. Check console.",
       });
     } finally {
       setLoading(false);
@@ -77,7 +75,6 @@ const AddMember = () => {
         className="bg-white shadow-lg rounded-lg p-6"
       >
         <h2 className="text-xl font-bold mb-4 text-center">Add New Member</h2>
-
         {message.text && (
           <p
             className={`mb-4 text-center font-semibold ${
@@ -87,7 +84,6 @@ const AddMember = () => {
             {message.text}
           </p>
         )}
-
         <input
           type="text"
           name="name"
@@ -114,7 +110,6 @@ const AddMember = () => {
           onChange={handleChange}
           className="border p-2 rounded w-full mb-3"
         />
-
         <select
           name="sex"
           value={formData.sex}
@@ -124,7 +119,6 @@ const AddMember = () => {
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
-
         <select
           name="duration"
           value={formData.duration}
@@ -136,7 +130,6 @@ const AddMember = () => {
           <option value="6 Months">6 Months</option>
           <option value="1 Year">1 Year</option>
         </select>
-
         <input
           type="number"
           name="amountPaid"
@@ -145,7 +138,6 @@ const AddMember = () => {
           onChange={handleChange}
           className="border p-2 rounded w-full mb-3"
         />
-
         <input
           type="number"
           name="due"
@@ -154,7 +146,6 @@ const AddMember = () => {
           onChange={handleChange}
           className="border p-2 rounded w-full mb-3"
         />
-
         <input
           type="file"
           accept="image/*"
@@ -162,7 +153,6 @@ const AddMember = () => {
           onChange={(e) => setAvatar(e.target.files[0])}
           className="mb-3"
         />
-
         <button
           type="submit"
           disabled={loading}

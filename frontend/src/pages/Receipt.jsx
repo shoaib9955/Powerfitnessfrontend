@@ -1,12 +1,14 @@
-// src/pages/Receipt.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import logo from "../assets/logo.png";
 
 const Receipt = () => {
   const { id } = useParams();
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [message, setMessage] = useState("");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -17,78 +19,140 @@ const Receipt = () => {
         });
         setMember(res.data);
       } catch (err) {
-        console.error("Error fetching member:", err);
+        console.error(
+          "Error fetching member:",
+          err.response?.data || err.message
+        );
       } finally {
         setLoading(false);
       }
     };
-
     fetchMember();
   }, [id, token]);
 
-  if (loading) return <p className="text-center mt-20">Loading receipt...</p>;
+  const handlePrint = () => window.print();
+
+  const handleSendReceipt = async () => {
+    if (!member || !member.email) {
+      setMessage("No email available for this member.");
+      return;
+    }
+
+    setSending(true);
+    setMessage("");
+
+    try {
+      const res = await axios.post(
+        `http://127.0.0.1:4000/api/members/${id}/send-receipt`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessage(res.data.message || "Receipt sent successfully!");
+    } catch (err) {
+      console.error("Send receipt error:", err.response?.data || err.message);
+      setMessage(err.response?.data?.message || "Failed to send receipt");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading)
+    return <p className="text-center mt-20 text-xl">Loading receipt...</p>;
   if (!member)
     return (
-      <p className="text-center mt-20 text-red-600">❌ Receipt not found</p>
+      <p className="text-center mt-20 text-red-600 text-xl">
+        ❌ Receipt not found
+      </p>
     );
 
   return (
-    <div className="max-w-md mx-auto mt-24 bg-white shadow-lg rounded-lg p-6 border">
-      <h2 className="text-2xl font-bold text-center mb-6">
+    <div className="max-w-2xl mx-auto mt-24 p-6 bg-white print:bg-white rounded-3xl shadow-xl border print:border print:shadow-none">
+      <div className="flex justify-center mb-4">
+        <img src={logo} alt="Logo" className="w-24 h-24 object-contain" />
+      </div>
+
+      <h2 className="text-3xl font-bold text-center mb-2 print:text-3xl">
         🧾 Payment Receipt
       </h2>
+      <p className="text-center text-gray-600 mb-6 print:text-base">
+        Thank you for choosing <strong>PowerFitness</strong>!
+      </p>
 
-      {member.avatar && (
-        <img
-          src={`http://127.0.0.1:4000/uploads/${member.avatar}`} // fixed path
-          alt="Member Avatar"
-          className="w-24 h-24 mx-auto rounded-full mb-4 object-cover"
-        />
-      )}
-
-      <div className="space-y-2">
-        <p>
-          <strong>Name:</strong> {member.name}
-        </p>
-        <p>
-          <strong>Phone:</strong> {member.phone}
-        </p>
-        <p>
-          <strong>Email:</strong> {member.email || "-"}
-        </p>
-        <p>
-          <strong>Sex:</strong> {member.sex}
-        </p>
-        <p>
-          <strong>Duration:</strong> {member.duration}
-        </p>
-        <p>
-          <strong>Amount Paid:</strong> ₹{member.amountPaid || 0}
-        </p>
-        <p>
-          <strong>Due:</strong> ₹{member.due || 0}
-        </p>
-        <p>
-          <strong>Joined:</strong>{" "}
-          {new Date(member.createdAt).toLocaleDateString()}
-        </p>
-        <p>
-          <strong>Expiry:</strong>{" "}
-          {new Date(member.expiryDate).toLocaleDateString()}
-        </p>
-        <p>
-          <strong>Status:</strong> {member.due > 0 ? "Pending" : "Paid"}
-        </p>
+      <div className="space-y-3 border border-gray-200 rounded-xl p-5 print:border print:p-5">
+        {/* Member info rows */}
+        <div className="flex justify-between">
+          <span className="font-semibold">Name:</span>
+          <span>{member.name}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Phone:</span>
+          <span>{member.phone}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Email:</span>
+          <span>{member.email || "-"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Sex:</span>
+          <span>{member.sex}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Duration:</span>
+          <span>{member.duration}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Amount Paid:</span>
+          <span>₹ {member.amountPaid || 0}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Due:</span>
+          <span className={member.due > 0 ? "text-red-600" : "text-green-600"}>
+            ₹ {member.due || 0}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Joined:</span>
+          <span>{new Date(member.createdAt).toLocaleDateString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Expiry:</span>
+          <span>{new Date(member.expiryDate).toLocaleDateString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-semibold">Status:</span>
+          <span
+            className={
+              member.due > 0
+                ? "text-red-600 font-bold"
+                : "text-green-600 font-bold"
+            }
+          >
+            {member.due > 0 ? "Pending" : "Paid"}
+          </span>
+        </div>
       </div>
 
-      <div className="mt-6 text-center">
+      {/* Buttons */}
+      <div className="mt-6 flex flex-col md:flex-row justify-center gap-4 print:hidden">
         <button
-          onClick={() => window.print()}
-          className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+          onClick={handlePrint}
+          className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full font-semibold transition-transform hover:scale-105"
         >
-          🖨️ Print Receipt
+          🖨️ Print
+        </button>
+
+        <button
+          onClick={handleSendReceipt}
+          disabled={sending}
+          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-full font-semibold transition-transform hover:scale-105 disabled:opacity-50"
+        >
+          {sending ? "Sending..." : "📧 Send Receipt"}
         </button>
       </div>
+
+      {message && (
+        <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
+      )}
     </div>
   );
 };
