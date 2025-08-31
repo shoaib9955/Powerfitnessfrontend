@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api"; // use centralized Axios instance
 
 const AdminFeeManagement = () => {
   const [fees, setFees] = useState([]);
@@ -10,7 +10,6 @@ const AdminFeeManagement = () => {
     offer: "",
   });
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchFees();
@@ -18,19 +17,19 @@ const AdminFeeManagement = () => {
 
   const fetchFees = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/fees");
-      setFees(res.data);
+      const res = await api.get("/fees");
+      const data = Array.isArray(res.data.data) ? res.data.data : [];
+      setFees(data);
     } catch (error) {
       console.error("Failed to fetch fees:", error);
+      setFees([]); // fallback
     }
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4000/api/fees", newPlan, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.post("/fees", newPlan);
       setNewPlan({ planName: "", amount: "", description: "", offer: "" });
       fetchFees();
     } catch (error) {
@@ -41,9 +40,7 @@ const AdminFeeManagement = () => {
 
   const handleUpdate = async (id, updatedFee) => {
     try {
-      await axios.put(`http://localhost:4000/api/fees/${id}`, updatedFee, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.put(`/fees/${id}`, updatedFee);
       fetchFees();
     } catch (error) {
       console.error("Failed to update fee:", error);
@@ -52,9 +49,7 @@ const AdminFeeManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/api/fees/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/fees/${id}`);
       setConfirmDeleteId(null);
       fetchFees();
     } catch (error) {

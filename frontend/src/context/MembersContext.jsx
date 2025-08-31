@@ -1,36 +1,43 @@
-import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import { createContext, useState } from "react";
+import api from "../api";
 
 export const MembersContext = createContext();
 
 export const MembersProvider = ({ children }) => {
   const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(false);
 
+  // Fetch all members from backend
   const fetchMembers = async () => {
-    setLoading(true);
     try {
-      const res = await axios.get("http://127.0.0.1:4000/api/members", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMembers(res.data);
+      setLoading(true);
+      const res = await api.get("/members");
+      setMembers(res.data); // assuming backend returns array of members
     } catch (err) {
-      console.error("Failed to fetch members:", err);
+      console.error("Fetch Members Error:", err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMembers();
-  }, [token]);
-
   const addMember = (member) => setMembers((prev) => [member, ...prev]);
+  const removeMember = (id) =>
+    setMembers((prev) => prev.filter((m) => m._id !== id));
+  const updateMember = (updatedMember) =>
+    setMembers((prev) =>
+      prev.map((m) => (m._id === updatedMember._id ? updatedMember : m))
+    );
 
   return (
     <MembersContext.Provider
-      value={{ members, setMembers, loading, fetchMembers, addMember }}
+      value={{
+        members,
+        loading,
+        fetchMembers,
+        addMember,
+        removeMember,
+        updateMember,
+      }}
     >
       {children}
     </MembersContext.Provider>

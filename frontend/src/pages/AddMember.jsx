@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
-import axios from "axios";
+import api from "../api"; // centralized Axios instance
+import { Link, useNavigate } from "react-router-dom";
 
 const AddMember = () => {
   const [formData, setFormData] = useState({
@@ -7,7 +8,7 @@ const AddMember = () => {
     phone: "",
     email: "",
     sex: "Male",
-    duration: "1 Month",
+    duration: "1", // ✅ send numeric string
     amountPaid: "",
     due: "",
   });
@@ -16,7 +17,7 @@ const AddMember = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const fileInputRef = useRef(null);
-  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,11 +32,8 @@ const AddMember = () => {
     if (avatar) data.append("avatar", avatar);
 
     try {
-      const res = await axios.post("http://127.0.0.1:4000/api/members", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await api.post("/members", data, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       setMemberCreated(res.data);
@@ -46,7 +44,7 @@ const AddMember = () => {
         phone: "",
         email: "",
         sex: "Male",
-        duration: "1 Month",
+        duration: "1",
         amountPaid: "",
         due: "",
       });
@@ -125,10 +123,10 @@ const AddMember = () => {
           onChange={handleChange}
           className="border p-2 rounded w-full mb-3"
         >
-          <option value="1 Month">1 Month</option>
-          <option value="3 Months">3 Months</option>
-          <option value="6 Months">6 Months</option>
-          <option value="1 Year">1 Year</option>
+          <option value="1">1 Month</option>
+          <option value="3">3 Months</option>
+          <option value="6">6 Months</option>
+          <option value="12">1 Year</option>
         </select>
         <input
           type="number"
@@ -166,18 +164,18 @@ const AddMember = () => {
 
       {memberCreated && (
         <div className="mt-4 flex flex-col gap-2">
-          <a
-            href={`/receipt/${memberCreated._id}`}
+          <Link
+            to={`/receipt/${memberCreated._id}`}
             className="bg-yellow-400 text-green-700 py-2 px-4 rounded text-center"
           >
             View Receipt
-          </a>
-          <a
-            href="/members"
+          </Link>
+          <Link
+            to="/members"
             className="bg-blue-500 text-white py-2 px-4 rounded text-center"
           >
             Go to Member List
-          </a>
+          </Link>
         </div>
       )}
     </div>

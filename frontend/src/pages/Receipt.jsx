@@ -1,7 +1,8 @@
+// src/pages/Receipt.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import logo from "../assets/logo.png";
+import api from "../api"; // ✅ use the axios instance
 
 const Receipt = () => {
   const { id } = useParams();
@@ -9,14 +10,11 @@ const Receipt = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchMember = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:4000/api/members/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get(`/api/members/${id}`);
         setMember(res.data);
       } catch (err) {
         console.error(
@@ -28,7 +26,7 @@ const Receipt = () => {
       }
     };
     fetchMember();
-  }, [id, token]);
+  }, [id]);
 
   const handlePrint = () => window.print();
 
@@ -42,11 +40,7 @@ const Receipt = () => {
     setMessage("");
 
     try {
-      const res = await axios.post(
-        `http://127.0.0.1:4000/api/members/${id}/send-receipt`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.post(`/members/${id}/send-receipt`);
       setMessage(res.data.message || "Receipt sent successfully!");
     } catch (err) {
       console.error("Send receipt error:", err.response?.data || err.message);
@@ -79,7 +73,6 @@ const Receipt = () => {
       </p>
 
       <div className="space-y-3 border border-gray-200 rounded-xl p-5 print:border print:p-5">
-        {/* Member info rows */}
         <div className="flex justify-between">
           <span className="font-semibold">Name:</span>
           <span>{member.name}</span>

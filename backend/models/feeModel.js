@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const feeSchema = new mongoose.Schema(
   {
-    planName: { type: String, required: true, unique: true },
+    planName: { type: String, required: true },
     amount: { type: Number, required: true },
-    description: { type: String },
-    offer: { type: String },
+    description: { type: String, default: "" },
+    offer: { type: String, default: "" },
   },
   { timestamps: true }
 );

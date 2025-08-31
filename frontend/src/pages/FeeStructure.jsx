@@ -1,102 +1,64 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import api from "../api";
+import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const FeeStructure = () => {
+  const { auth } = useContext(AuthContext);
   const [fees, setFees] = useState([]);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFees = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/fees");
-        setFees(res.data);
-      } catch (error) {
-        console.error("Failed to fetch fees:", error);
+        const res = await api.get("/fees");
+        setFees(Array.isArray(res.data.data) ? res.data.data : []);
+      } catch (err) {
+        console.error(err);
+        setFees([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchFees();
   }, []);
 
-  const handleContact = () => {
-    navigate("/contact");
-  };
+  if (loading) return <p className="text-center mt-20">Loading fees...</p>;
+  if (!fees.length)
+    return <p className="text-center mt-20">No fees available</p>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-red-100 to-red-200 p-4 md:p-20">
-      <h1 className="text-3xl md:text-5xl font-extrabold text-center mb-8 md:mb-12 text-red-800 tracking-wide">
-        Our Fee Structure
-      </h1>
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white/30 backdrop-blur-md border border-red-300 rounded-2xl shadow-lg text-sm md:text-base">
-          <thead className="bg-red-600 text-white rounded-t-2xl">
+    <div className="min-h-screen p-8 md:p-20 bg-gray-100">
+      <h1 className="text-3xl font-bold text-center mb-8">Fee Structure</h1>
+      {auth?.role === "admin" && (
+        <div className="text-center mb-4">
+          <Link
+            to="/admin/fees"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Manage Fees
+          </Link>
+        </div>
+      )}
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
+        <table className="w-full border-collapse">
+          <thead className="bg-gray-200">
             <tr>
-              <th className="py-3 px-4 md:py-4 md:px-6 text-left">Plan</th>
-              <th className="py-3 px-4 md:py-4 md:px-6 text-left">Amount</th>
-              <th className="py-3 px-4 md:py-4 md:px-6 text-left">
-                Description
-              </th>
-              <th className="py-3 px-4 md:py-4 md:px-6 text-left">Offer</th>
-              <th className="py-3 px-4 md:py-4 md:px-6 text-center">Action</th>
+              <th className="border px-4 py-2">Plan</th>
+              <th className="border px-4 py-2">Amount</th>
+              <th className="border px-4 py-2">Description</th>
+              <th className="border px-4 py-2">Offer</th>
             </tr>
           </thead>
           <tbody>
-            {fees.map((fee, index) => {
-              let discountedAmount = fee.amount;
-              if (fee.offer && fee.offer.includes("%")) {
-                const percent = parseFloat(fee.offer);
-                if (!isNaN(percent))
-                  discountedAmount = fee.amount * (1 - percent / 100);
-              }
-
-              return (
-                <motion.tr
-                  key={fee._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 * index }}
-                  className="border-b border-red-300 hover:bg-red-100 transition"
-                >
-                  <td className="py-2 px-2 md:py-4 md:px-6 font-semibold text-red-700">
-                    {fee.planName}
-                  </td>
-                  <td className="py-2 px-2 md:py-4 md:px-6 text-red-600 font-bold">
-                    {fee.offer ? (
-                      <>
-                        <span className="line-through text-gray-500">
-                          ₹{fee.amount}
-                        </span>{" "}
-                        <span>₹{discountedAmount.toFixed(0)}</span>
-                      </>
-                    ) : (
-                      <>₹{fee.amount}</>
-                    )}
-                  </td>
-                  <td className="py-2 px-2 md:py-4 md:px-6 text-gray-700">
-                    {fee.description || "-"}
-                  </td>
-                  <td className="py-2 px-2 md:py-4 md:px-6 text-red-600 font-semibold">
-                    {fee.offer || "-"}
-                  </td>
-                  <td className="py-2 px-2 md:py-4 md:px-6 text-center">
-                    {/* Button wrapped in div instead of tr */}
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <button
-                        onClick={handleContact}
-                        className="bg-red-600 text-white py-1 px-3 md:py-2 md:px-4 rounded-lg hover:bg-red-700 transition text-sm md:text-base"
-                      >
-                        Contact Us
-                      </button>
-                    </motion.div>
-                  </td>
-                </motion.tr>
-              );
-            })}
+            {fees.map((fee) => (
+              <tr key={fee._id}>
+                <td className="border px-4 py-2">{fee.planName}</td>
+                <td className="border px-4 py-2">{fee.amount}</td>
+                <td className="border px-4 py-2">{fee.description || "-"}</td>
+                <td className="border px-4 py-2">{fee.offer || "-"}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

@@ -1,27 +1,37 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
-// Named export
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
-    token: localStorage.getItem("token") || "",
-    role: localStorage.getItem("role") || "",
-    username: localStorage.getItem("username") || "",
+    token: null,
+    role: "guest",
   });
 
-  const login = (data) => {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
-    localStorage.setItem("username", data.username);
-    setAuth(data);
+  useEffect(() => {
+    // Load auth from localStorage safely
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (token && role) {
+      setAuth({ token, role });
+    }
+  }, []);
+
+  const login = (token, role) => {
+    if (role !== "admin") {
+      alert("Only admin users can log in!");
+      return; // prevent non-admin login
+    }
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", role);
+    setAuth({ token, role });
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    localStorage.removeItem("username");
-    setAuth({ token: "", role: "", username: "" });
+    setAuth({ token: null, role: "guest" });
   };
 
   return (

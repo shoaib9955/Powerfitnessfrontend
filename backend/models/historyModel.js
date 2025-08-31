@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
 
-const memberHistorySchema = new mongoose.Schema(
+const historySchema = new mongoose.Schema(
   {
-    memberId: { type: mongoose.Schema.Types.ObjectId, ref: "Member" }, // link to original member
-    action: {
-      type: String,
-      enum: ["Created", "Updated", "Deleted", "Restored"], // added Restored + capitalized
-      required: true,
-    },
-    details: { type: Object, required: true }, // snapshot of member data
-    performedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // who performed the action
+    memberId: { type: mongoose.Schema.Types.ObjectId, ref: "Member" },
+    action: { type: String, enum: ["Created", "Updated", "Deleted"] },
+    details: { type: Object }, // full member data snapshot
+    performedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("History", memberHistorySchema);
+export default mongoose.model("MemberHistory", historySchema);

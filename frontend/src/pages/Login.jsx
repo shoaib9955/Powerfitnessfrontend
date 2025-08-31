@@ -1,67 +1,83 @@
+// src/pages/Login.jsx
 import React, { useState, useContext } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import api from "../api";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/auth/login",
-        formData
-      );
+      const res = await api.post("/auth/login", { username, password });
 
-      // Save token and role in context
-      login(res.data);
+      const { token, role } = res.data;
 
-      // Redirect based on role
-      if (res.data.role === "admin") navigate("/add-member");
-      else navigate("/");
+      // Only allow admin
+      if (role !== "admin") {
+        alert("Only admin can login.");
+        setLoading(false);
+        return;
+      }
+
+      // Save token and role in AuthContext
+      login(token, role);
+
+      // Redirect to admin dashboard (or home)
+      navigate("/");
     } catch (err) {
-      console.error(err);
-      alert("Login failed: check username/password");
+      console.error(err.response?.data || err.message);
+      alert("Login failed. Check credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow"
-    >
-      <h2 className="text-xl font-bold mb-4">Login</h2>
-      <input
-        type="text"
-        name="username"
-        placeholder="Username"
-        value={formData.username}
-        onChange={handleChange}
-        className="border p-2 rounded w-full mb-3"
-        required
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-        className="border p-2 rounded w-full mb-4"
-        required
-      />
-      <button
-        type="submit"
-        className="bg-green-600 text-white py-2 px-4 rounded w-full hover:bg-green-700"
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded shadow-md w-full max-w-md"
       >
-        Login
-      </button>
-    </form>
+        <h2 className="text-2xl font-bold mb-6 text-center text-green-600">
+          Admin Login
+        </h2>
+
+        <label className="block mb-2">Username</label>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full border px-3 py-2 rounded mb-4"
+          required
+        />
+
+        <label className="block mb-2">Password</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border px-3 py-2 rounded mb-4"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
+    </div>
   );
 };
 
