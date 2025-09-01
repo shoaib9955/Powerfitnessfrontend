@@ -32,7 +32,7 @@ const AddMember = () => {
     if (avatar) data.append("avatar", avatar);
 
     try {
-      const res = await api.post("/members", data, {
+      const res = await api.post("api/members", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

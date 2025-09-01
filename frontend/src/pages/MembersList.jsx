@@ -11,7 +11,7 @@ const MemberList = () => {
 
   const fetchMembers = async () => {
     try {
-      const res = await api.get("/members");
+      const res = await api.get("api/members");
       setMembers(res.data.data || []);
     } catch (err) {
       console.error(err);
@@ -25,7 +25,7 @@ const MemberList = () => {
   const handleDelete = async (memberId) => {
     if (!window.confirm("Delete this member?")) return;
     try {
-      await api.delete(`/members/${memberId}`);
+      await api.delete(`api/members/${memberId}`);
       alert("Member deleted successfully");
       fetchMembers();
     } catch (err) {
@@ -38,7 +38,7 @@ const MemberList = () => {
   const handleRestore = async (historyId) => {
     if (!window.confirm("Restore this member?")) return;
     try {
-      await api.post(`/members/restore/${historyId}`);
+      await api.post(`api/members/restore/${historyId}`);
       alert("Member restored successfully");
       fetchMembers();
     } catch (err) {

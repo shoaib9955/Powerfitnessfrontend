@@ -17,25 +17,25 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { username, password });
+      const res = await api.post("/api/auth/login", { username, password });
+      const { token, role, user } = res.data;
 
-      const { token, role } = res.data;
+      // Get role safely
+      const userRole = role || user?.role;
 
-      // Only allow admin
-      if (role !== "admin") {
+      if (userRole !== "admin") {
         alert("Only admin can login.");
         setLoading(false);
         return;
       }
 
       // Save token and role in AuthContext
-      login(token, role);
+      login(token, userRole);
 
-      // Redirect to admin dashboard (or home)
       navigate("/");
     } catch (err) {
       console.error(err.response?.data || err.message);
-      alert("Login failed. Check credentials.");
+      alert(err.response?.data?.message || "Login failed. Check credentials.");
     } finally {
       setLoading(false);
     }

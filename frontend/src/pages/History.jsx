@@ -11,7 +11,7 @@ const History = () => {
 
   const fetchHistory = async () => {
     try {
-      const res = await api.get("/history"); // your history route
+      const res = await api.get("api/history"); // your history route
       setHistories(res.data.data || []);
     } catch (err) {
       console.error(
@@ -28,7 +28,7 @@ const History = () => {
   const handleRestore = async (historyId) => {
     if (!window.confirm("Restore this member?")) return;
     try {
-      const res = await api.post(`/members/restore/${historyId}`);
+      const res = await api.post(`api/members/restore/${historyId}`);
       alert(res.data.message || "Member restored successfully");
       fetchHistory(); // refresh history
     } catch (err) {
@@ -41,7 +41,7 @@ const History = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Permanently delete this member?")) return;
     try {
-      const res = await api.delete(`/members/${id}`);
+      const res = await api.delete(`api/members/${id}`);
       alert(res.data.message || "Member deleted permanently");
       fetchHistory(); // refresh history
     } catch (err) {

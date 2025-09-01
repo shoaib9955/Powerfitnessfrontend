@@ -1,1 +1,1 @@
-export const BASE_URL = "https://powerfitnessbackend.vercel.app/api";
+export const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";

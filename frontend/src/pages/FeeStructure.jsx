@@ -11,7 +11,7 @@ const FeeStructure = () => {
   useEffect(() => {
     const fetchFees = async () => {
       try {
-        const res = await api.get("/fees");
+        const res = await api.get("api/fees");
         setFees(Array.isArray(res.data.data) ? res.data.data : []);
       } catch (err) {
         console.error(err);

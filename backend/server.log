@@ -1,0 +1,205 @@
+[2025-08-30T17:04:58.604Z] info: ✅ MongoDB connected
+[2025-08-30T17:04:58.653Z] info: ⚠️ Admin already exists
+[2025-08-30T17:04:58.659Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:09:25.634Z] info: SIGINT received. Closing HTTP server...
+[2025-08-30T17:09:31.834Z] info: ✅ MongoDB connected
+[2025-08-30T17:09:31.895Z] info: ⚠️ Admin already exists
+[2025-08-30T17:09:31.900Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:12:18.929Z] info: SIGINT received. Closing HTTP server...
+[2025-08-30T17:12:21.188Z] info: ✅ MongoDB connected
+[2025-08-30T17:12:21.242Z] info: ⚠️ Admin already exists
+[2025-08-30T17:12:21.247Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:13:24.913Z] info: ✅ MongoDB connected
+[2025-08-30T17:13:24.977Z] info: ⚠️ Admin already exists
+[2025-08-30T17:13:24.982Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:13:56.233Z] info: ✅ MongoDB connected
+[2025-08-30T17:13:56.285Z] info: ⚠️ Admin already exists
+[2025-08-30T17:13:56.291Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:14:20.548Z] info: ✅ MongoDB connected
+[2025-08-30T17:14:20.604Z] info: ⚠️ Admin already exists
+[2025-08-30T17:14:20.612Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:14:37.746Z] info: ✅ MongoDB connected
+[2025-08-30T17:14:37.799Z] info: ⚠️ Admin already exists
+[2025-08-30T17:14:37.805Z] info: 🚀 Server running on port 4000
+[2025-08-30T17:23:28.713Z] error: ❌ DB connection error: bad auth : authentication failed
+[2025-08-30T17:23:58.373Z] error: ❌ DB connection error: bad auth : authentication failed
+[2025-08-31T08:59:20.506Z] error: ❌ DB connection error: bad auth : authentication failed
+[2025-08-31T08:59:37.729Z] error: ❌ DB connection error: bad auth : authentication failed
+[2025-08-31T09:07:31.711Z] info: ✅ MongoDB connected
+[2025-08-31T09:07:31.775Z] info: 🚀 Server running on port 4000
+[2025-08-31T09:11:52.431Z] info: ✅ MongoDB connected
+[2025-08-31T09:11:52.500Z] info: 🚀 Server running on port 4000
+[2025-08-31T09:12:40.541Z] info: ✅ MongoDB connected
+[2025-08-31T09:12:40.599Z] info: 🚀 Server running on port 4000
+[2025-08-31T09:13:42.269Z] info: ✅ MongoDB connected
+[2025-08-31T09:13:42.339Z] info: 🚀 Server running on port 4000
+[2025-08-31T09:13:54.209Z] info: ✅ MongoDB connected
+[2025-08-31T09:13:54.273Z] info: 🚀 Server running on port 4000
+[2025-08-31T09:34:50.969Z] info: Shutting down gracefully...
+[2025-08-31T09:34:57.546Z] info: ✅ MongoDB connected
+[2025-08-31T09:34:57.608Z] info: 🚀 Server running on port 4000
+[2025-08-31T09:35:01.000Z] info: Shutting down gracefully...
+[2025-08-31T09:37:03.585Z] info: ✅ MongoDB connected
+[2025-08-31T09:37:03.649Z] info: 🚀 Server running on port 4000
+[2025-08-31T10:00:43.804Z] info: Shutting down gracefully...
+[2025-08-31T10:00:46.145Z] info: ✅ MongoDB connected
+[2025-08-31T10:00:46.210Z] info: 🚀 Server running on port 4000
+[2025-08-31T10:02:41.316Z] info: Shutting down gracefully...
+[2025-08-31T10:02:43.897Z] info: ✅ MongoDB connected
+[2025-08-31T10:02:43.952Z] info: 🚀 Server running on port 4000
+[2025-08-31T10:17:34.249Z] info: ✅ MongoDB connected
+[2025-08-31T10:17:34.300Z] info: 🚀 Server running on port 4000
+[2025-08-31T10:19:09.106Z] info: ✅ MongoDB connected
+[2025-08-31T10:19:09.246Z] info: 🚀 Server running on port 4000
+[2025-08-31T10:24:08.423Z] info: ✅ MongoDB connected
+[2025-08-31T10:24:08.513Z] info: 🚀 Server running on port 4000
+[2025-08-31T11:47:23.379Z] info: Shutting down gracefully...
+[2025-08-31T11:47:25.863Z] info: ✅ MongoDB connected
+[2025-08-31T11:47:25.925Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:01:18.263Z] info: ✅ MongoDB connected
+[2025-08-31T12:01:18.365Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:05:04.284Z] info: ✅ MongoDB connected
+[2025-08-31T12:05:04.349Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:25:16.470Z] info: ✅ MongoDB connected
+[2025-08-31T12:25:16.529Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:26:47.772Z] info: ✅ MongoDB connected
+[2025-08-31T12:26:47.823Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:29:18.019Z] info: ✅ MongoDB connected
+[2025-08-31T12:29:18.078Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:29:49.488Z] info: ✅ MongoDB connected
+[2025-08-31T12:29:49.557Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:29:52.660Z] info: ✅ MongoDB connected
+[2025-08-31T12:29:52.710Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:42:51.895Z] info: ✅ MongoDB connected
+[2025-08-31T12:42:51.954Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:48:43.533Z] info: ✅ MongoDB connected
+[2025-08-31T12:48:43.596Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:50:07.396Z] info: ✅ MongoDB connected
+[2025-08-31T12:50:07.443Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:50:39.056Z] info: ✅ MongoDB connected
+[2025-08-31T12:50:39.117Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:51:21.824Z] info: ✅ MongoDB connected
+[2025-08-31T12:51:21.875Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:52:00.987Z] info: ✅ MongoDB connected
+[2025-08-31T12:52:01.038Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:54:02.460Z] info: Shutting down gracefully...
+[2025-08-31T12:54:07.568Z] info: ✅ MongoDB connected
+[2025-08-31T12:54:07.623Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:56:34.644Z] info: ✅ MongoDB connected
+[2025-08-31T12:56:34.791Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:57:36.199Z] info: ✅ MongoDB connected
+[2025-08-31T12:57:36.318Z] info: 🚀 Server running on port 4000
+[2025-08-31T12:59:09.050Z] info: ✅ MongoDB connected
+[2025-08-31T12:59:09.119Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:00:16.139Z] info: ✅ MongoDB connected
+[2025-08-31T13:00:16.189Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:01:48.960Z] info: ✅ MongoDB connected
+[2025-08-31T13:01:49.019Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:04:47.567Z] info: ✅ MongoDB connected
+[2025-08-31T13:04:47.642Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:04:54.618Z] info: Shutting down gracefully...
+[2025-08-31T13:04:58.041Z] info: ✅ MongoDB connected
+[2025-08-31T13:04:58.122Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:06:32.436Z] info: ✅ MongoDB connected
+[2025-08-31T13:06:32.516Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:08:48.823Z] info: Shutting down gracefully...
+[2025-08-31T13:08:52.262Z] info: ✅ MongoDB connected
+[2025-08-31T13:08:52.319Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:11:39.090Z] info: ✅ MongoDB connected
+[2025-08-31T13:11:39.968Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:11:44.243Z] info: ✅ MongoDB connected
+[2025-08-31T13:11:44.304Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:11:50.557Z] info: ✅ MongoDB connected
+[2025-08-31T13:11:51.091Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:12:01.509Z] info: ✅ MongoDB connected
+[2025-08-31T13:12:01.582Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:12:14.929Z] info: ✅ MongoDB connected
+[2025-08-31T13:12:14.973Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:15:41.767Z] info: ✅ MongoDB connected
+[2025-08-31T13:15:41.823Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:20:21.489Z] info: ✅ MongoDB connected
+[2025-08-31T13:20:21.550Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:29:14.055Z] info: ✅ MongoDB connected
+[2025-08-31T13:29:14.118Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:30:25.183Z] info: Shutting down gracefully...
+[2025-08-31T13:30:28.207Z] info: ✅ MongoDB connected
+[2025-08-31T13:30:28.658Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:33:30.596Z] info: ✅ MongoDB connected
+[2025-08-31T13:33:30.656Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:43:32.660Z] info: ✅ MongoDB connected
+[2025-08-31T13:43:32.716Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:47:54.038Z] info: ✅ MongoDB connected
+[2025-08-31T13:47:54.089Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:54:20.356Z] info: ✅ MongoDB connected
+[2025-08-31T13:54:20.417Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:55:13.875Z] info: ✅ MongoDB connected
+[2025-08-31T13:55:13.942Z] info: 🚀 Server running on port 4000
+[2025-08-31T13:55:58.780Z] info: ✅ MongoDB connected
+[2025-08-31T13:55:58.848Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:01:36.505Z] info: ✅ MongoDB connected
+[2025-08-31T14:01:36.565Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:09:45.744Z] info: ✅ MongoDB connected
+[2025-08-31T14:09:45.799Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:10:20.067Z] info: Shutting down gracefully...
+[2025-08-31T14:10:23.121Z] info: ✅ MongoDB connected
+[2025-08-31T14:10:23.185Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:13:04.790Z] info: ✅ MongoDB connected
+[2025-08-31T14:13:04.845Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:15:35.735Z] info: ✅ MongoDB connected
+[2025-08-31T14:15:35.795Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:17:22.325Z] info: ✅ MongoDB connected
+[2025-08-31T14:17:22.391Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:17:40.668Z] info: ✅ MongoDB connected
+[2025-08-31T14:17:40.723Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:17:59.773Z] info: ✅ MongoDB connected
+[2025-08-31T14:17:59.833Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:19:47.657Z] info: ✅ MongoDB connected
+[2025-08-31T14:19:47.784Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:20:26.777Z] info: ✅ MongoDB connected
+[2025-08-31T14:20:26.844Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:21:23.890Z] info: Shutting down gracefully...
+[2025-08-31T14:21:26.123Z] info: ✅ MongoDB connected
+[2025-08-31T14:21:26.173Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:33:21.487Z] info: ✅ MongoDB connected
+[2025-08-31T14:33:21.543Z] info: 🚀 Server running on port 4000
+[2025-08-31T14:55:35.790Z] info: ✅ MongoDB connected
+[2025-08-31T14:55:35.924Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:07:02.437Z] info: ✅ MongoDB connected
+[2025-08-31T15:07:02.606Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:08:46.661Z] info: ✅ MongoDB connected
+[2025-08-31T15:08:46.895Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:09:54.841Z] info: ✅ MongoDB connected
+[2025-08-31T15:09:55.418Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:10:04.835Z] info: Shutting down gracefully...
+[2025-08-31T15:10:07.794Z] info: ✅ MongoDB connected
+[2025-08-31T15:10:07.951Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:35:11.871Z] info: ✅ MongoDB connected
+[2025-08-31T15:35:11.938Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:35:53.218Z] info: Shutting down gracefully...
+[2025-08-31T15:36:18.909Z] info: ✅ MongoDB connected
+[2025-08-31T15:36:19.040Z] info: 🚀 Server running on port 4000
+[2025-08-31T15:42:27.109Z] info: Shutting down gracefully...
+[2025-08-31T15:50:58.833Z] info: ✅ MongoDB connected
+[2025-08-31T15:53:30.287Z] info: ✅ MongoDB connected
+[2025-08-31T15:53:41.612Z] info: ✅ MongoDB connected
+[2025-09-01T07:33:50.838Z] info: ✅ MongoDB connected
+[2025-09-01T07:38:33.612Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T07:38:33.858Z] info: ✅ MongoDB connected
+[2025-09-01T07:39:10.404Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T07:39:10.625Z] info: ✅ MongoDB connected
+[2025-09-01T07:39:51.525Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T07:39:52.238Z] info: ✅ MongoDB connected
+[2025-09-01T07:46:34.857Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T07:46:36.191Z] info: ✅ MongoDB connected
+[2025-09-01T08:12:30.441Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T08:12:30.774Z] info: ✅ MongoDB connected
+[2025-09-01T08:12:40.087Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T08:12:40.414Z] info: ✅ MongoDB connected
+[2025-09-01T08:16:50.341Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T08:16:50.668Z] info: ✅ MongoDB connected
+[2025-09-01T08:16:54.270Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T08:16:54.582Z] info: ✅ MongoDB connected
+[2025-09-01T08:17:36.712Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T08:17:37.156Z] info: ✅ MongoDB connected
+[2025-09-01T08:17:38.168Z] info: 🚀 Server running on http://localhost:4000
+[2025-09-01T08:17:38.606Z] info: ✅ MongoDB connected

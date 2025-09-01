@@ -96,6 +96,13 @@ mongoose
   .catch((err) => {
     logger.error("❌ DB connection error:", err);
   });
+// -------------------- Local Development Server --------------------
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    logger.info(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
 
 // -------------------- Export app for Vercel --------------------
 export default app;

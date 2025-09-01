@@ -40,7 +40,7 @@ const Receipt = () => {
     setMessage("");
 
     try {
-      const res = await api.post(`/members/${id}/send-receipt`);
+      const res = await api.post(`api/members/${id}/send-receipt`);
       setMessage(res.data.message || "Receipt sent successfully!");
     } catch (err) {
       console.error("Send receipt error:", err.response?.data || err.message);

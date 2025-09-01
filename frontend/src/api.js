@@ -1,18 +1,16 @@
 import axios from "axios";
+import { BASE_URL } from "./config";
 
 const api = axios.create({
-  baseURL: "https://powerfitnessbackend.vercel.app/api", // updated for Vercel backend
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Attach token dynamically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
