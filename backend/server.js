@@ -1,3 +1,4 @@
+// backend/server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -41,16 +42,23 @@ const logger = winston.createLogger({
 // -------------------- Security & Body Parsers --------------------
 app.use(helmet());
 
-const allowedOrigins = (process.env.CORS_ORIGINS || "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
+/// ✅ Allow dev + production origins
+// ✅ Auto-detect localhost + whitelist production domains
+const allowedOrigins = [
+  "https://yourfrontend.onrender.com", // replace with your deployed frontend
+];
 
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      cb(new Error("CORS: Not allowed"));
+      if (
+        !origin ||
+        origin.startsWith("http://localhost") ||
+        allowedOrigins.includes(origin)
+      ) {
+        return cb(null, true);
+      }
+      cb(new Error(`CORS: Not allowed - ${origin}`));
     },
     credentials: true,
   })
@@ -74,10 +82,10 @@ app.use("/api/history", historyRoutes);
 app.use("/api/fees", feeRoutes);
 
 // -------------------- Serve Frontend --------------------
-app.use(express.static(path.join(__dirname, "frontend/dist")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend/dist", "index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
 // -------------------- Connect to MongoDB --------------------
@@ -102,7 +110,7 @@ mongoose
     logger.error("❌ DB connection error:", err);
   });
 
-// -------------------- Start Server (Render) --------------------
+// -------------------- Start Server --------------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   logger.info(`🚀 Server running on http://localhost:${PORT}`);
