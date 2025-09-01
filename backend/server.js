@@ -42,20 +42,16 @@ const logger = winston.createLogger({
 // -------------------- Security & Body Parsers --------------------
 app.use(helmet());
 
-/// ✅ Allow dev + production origins
-// ✅ Auto-detect localhost + whitelist production domains
 const allowedOrigins = [
-  "https://yourfrontend.onrender.com", // replace with your deployed frontend
+  "http://localhost:5173", // local dev frontend
+  "https://powerfitness13.onrender.com", // your deployed frontend
 ];
 
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (
-        !origin ||
-        origin.startsWith("http://localhost") ||
-        allowedOrigins.includes(origin)
-      ) {
+      // Allow requests with no origin (like mobile apps, Postman) or whitelisted domains
+      if (!origin || allowedOrigins.includes(origin)) {
         return cb(null, true);
       }
       cb(new Error(`CORS: Not allowed - ${origin}`));
