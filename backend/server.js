@@ -73,6 +73,13 @@ app.use("/api/receipts", receiptRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/fees", feeRoutes);
 
+// -------------------- Serve Frontend --------------------
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/dist", "index.html"));
+});
+
 // -------------------- Connect to MongoDB --------------------
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -81,10 +88,8 @@ mongoose
   .then(async () => {
     logger.info("✅ MongoDB connected");
 
-    // Ensure admin exists or updated
     await createAdmin();
 
-    // Optional: test email
     if (process.env.NODE_ENV !== "production") {
       sendEmail({
         to: process.env.EMAIL_USER,
@@ -96,13 +101,9 @@ mongoose
   .catch((err) => {
     logger.error("❌ DB connection error:", err);
   });
-// -------------------- Local Development Server --------------------
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    logger.info(`🚀 Server running on http://localhost:${PORT}`);
-  });
-}
 
-// -------------------- Export app for Vercel --------------------
-export default app;
+// -------------------- Start Server (Render) --------------------
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  logger.info(`🚀 Server running on http://localhost:${PORT}`);
+});
