@@ -50,10 +50,12 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      // Allow requests with no origin (like mobile apps, Postman) or whitelisted domains
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests from localhost (dev) or no origin (Postman)
+      if (!origin || origin.startsWith("http://localhost"))
         return cb(null, true);
-      }
+      // Allow production domain
+      if (origin === "https://powerfitness13.onrender.com")
+        return cb(null, true);
       cb(new Error(`CORS: Not allowed - ${origin}`));
     },
     credentials: true,
