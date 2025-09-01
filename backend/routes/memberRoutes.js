@@ -196,12 +196,10 @@ router.post(
       }
 
       if (history.action !== "Deleted") {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "Only deleted members can be restored",
-          });
+        return res.status(400).json({
+          success: false,
+          message: "Only deleted members can be restored",
+        });
       }
 
       // Make sure we have snapshot data
@@ -230,12 +228,10 @@ router.post(
       if (query.length > 0) {
         const existing = await Member.findOne({ $or: query });
         if (existing) {
-          return res
-            .status(400)
-            .json({
-              success: false,
-              message: "Member with same email/phone already exists",
-            });
+          return res.status(400).json({
+            success: false,
+            message: "Member with same email/phone already exists",
+          });
         }
       }
 
