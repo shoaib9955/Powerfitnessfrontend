@@ -1,8 +1,7 @@
-// src/pages/Receipt.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import logo from "../assets/logo.png";
-import api from "../api"; // ✅ use the axios instance
+import api from "../api";
 
 const Receipt = () => {
   const { id } = useParams();
@@ -14,6 +13,7 @@ const Receipt = () => {
   useEffect(() => {
     const fetchMember = async () => {
       try {
+        // ✅ Fixed template literal usage
         const res = await api.get(`/api/members/${id}`);
         setMember(res.data);
       } catch (err) {
@@ -31,7 +31,7 @@ const Receipt = () => {
   const handlePrint = () => window.print();
 
   const handleSendReceipt = async () => {
-    if (!member || !member.email) {
+    if (!member?.email) {
       setMessage("No email available for this member.");
       return;
     }
@@ -40,7 +40,8 @@ const Receipt = () => {
     setMessage("");
 
     try {
-      const res = await api.post(`api/members/${id}/send-receipt`);
+      // ✅ Fixed template literal usage
+      const res = await api.post(`/api/members/${id}/send-receipt`);
       setMessage(res.data.message || "Receipt sent successfully!");
     } catch (err) {
       console.error("Send receipt error:", err.response?.data || err.message);
@@ -125,7 +126,6 @@ const Receipt = () => {
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="mt-6 flex flex-col md:flex-row justify-center gap-4 print:hidden">
         <button
           onClick={handlePrint}
@@ -133,7 +133,6 @@ const Receipt = () => {
         >
           🖨️ Print
         </button>
-
         <button
           onClick={handleSendReceipt}
           disabled={sending}

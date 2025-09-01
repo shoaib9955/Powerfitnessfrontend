@@ -45,7 +45,18 @@ const validateMember = [
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const members = await Member.find().populate("createdBy", "username role");
-    res.json({ success: true, data: members });
+    const plainMembers = members.map((m) => ({
+      _id: m._id,
+      name: m.name,
+      email: m.email || "",
+      phone: m.phone,
+      sex: m.sex,
+      duration: m.duration,
+      amountPaid: m.amountPaid,
+      due: m.due,
+      avatar: m.avatar || null,
+    }));
+    res.json({ success: true, data: plainMembers });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -80,14 +91,29 @@ router.post(
         performedBy: req.user._id,
       });
 
-      res.status(201).json({ success: true, data: member });
+      // Return plain object
+      res.status(201).json({
+        success: true,
+        member: {
+          _id: member._id,
+          name: member.name,
+          email: member.email || "",
+          phone: member.phone,
+          sex: member.sex,
+          duration: member.duration,
+          amountPaid: member.amountPaid,
+          due: member.due,
+          avatar: member.avatar || null,
+        },
+      });
     } catch (err) {
+      console.error("❌ Add member error:", err.message);
       res.status(500).json({ success: false, message: err.message });
     }
   }
 );
 
-// UPDATE member (snapshot in history)
+// UPDATE member
 router.put(
   "/:id",
   authMiddleware,
@@ -108,6 +134,7 @@ router.put(
         "duration",
         "amountPaid",
         "due",
+        "sex",
       ];
       updateFields.forEach((key) => {
         if (
@@ -130,7 +157,20 @@ router.put(
         performedBy: req.user._id,
       });
 
-      res.json({ success: true, data: member });
+      res.json({
+        success: true,
+        member: {
+          _id: member._id,
+          name: member.name,
+          email: member.email || "",
+          phone: member.phone,
+          sex: member.sex,
+          duration: member.duration,
+          amountPaid: member.amountPaid,
+          due: member.due,
+          avatar: member.avatar || null,
+        },
+      });
     } catch (err) {
       console.error("Update error:", err);
       res
@@ -140,7 +180,7 @@ router.put(
   }
 );
 
-// DELETE member permanently (or from history)
+// DELETE member permanently
 router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const member = await Member.findById(req.params.id);
@@ -156,7 +196,6 @@ router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
       return res.json({ success: true, message: "Member deleted permanently" });
     }
 
-    // Check history if member not found
     const history = await MemberHistory.findById(req.params.id);
     if (!history)
       return res
@@ -179,9 +218,6 @@ router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // RESTORE member from deleted snapshot
-// RESTORE member from deleted snapshot
-// RESTORE member from deleted snapshot
-// Restore deleted member
 router.post(
   "/restore/:historyId",
   authMiddleware,
@@ -202,25 +238,21 @@ router.post(
         });
       }
 
-      // Make sure we have snapshot data
       if (!history.details || !history.details.name) {
         return res
           .status(400)
           .json({ success: false, message: "Invalid history snapshot" });
       }
 
-      // Convert details to plain object
       const details = history.details.toObject
         ? history.details.toObject()
         : { ...history.details };
 
-      // Remove unwanted props
       delete details._id;
       delete details.__v;
       delete details.createdAt;
       delete details.updatedAt;
 
-      // Build a safe query (only include valid fields)
       const query = [];
       if (details.email) query.push({ email: details.email });
       if (details.phone) query.push({ phone: details.phone });
@@ -235,11 +267,9 @@ router.post(
         }
       }
 
-      // Create new member
       const restored = new Member(details);
       await restored.save();
 
-      // Save restore action to history
       await MemberHistory.create({
         memberId: restored._id,
         action: "Restored",
@@ -247,14 +277,23 @@ router.post(
         performedBy: req.user._id,
       });
 
-      return res.json({
+      res.json({
         success: true,
-        message: "Member restored successfully",
-        member: restored,
+        member: {
+          _id: restored._id,
+          name: restored.name,
+          email: restored.email || "",
+          phone: restored.phone,
+          sex: restored.sex,
+          duration: restored.duration,
+          amountPaid: restored.amountPaid,
+          due: restored.due,
+          avatar: restored.avatar || null,
+        },
       });
     } catch (err) {
       console.error("❌ Restore error:", err.message);
-      return res
+      res
         .status(500)
         .json({ success: false, message: "Error restoring member" });
     }

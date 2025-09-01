@@ -57,6 +57,7 @@ router.delete("/delete/:id", async (req, res) => {
 
 // -------------------- RESTORE MEMBER FROM HISTORY --------------------
 // -------------------- RESTORE MEMBER FROM HISTORY --------------------
+// -------------------- RESTORE MEMBER FROM HISTORY --------------------
 router.post("/restore/:id", async (req, res) => {
   if (req.user.role !== "admin")
     return res.status(403).json({ success: false, message: "Forbidden" });
@@ -88,14 +89,26 @@ router.post("/restore/:id", async (req, res) => {
       });
     }
 
-    const restored = new Member(rest);
+    // Only take primitive fields for restore
+    const restoredData = {
+      name: rest.name || "",
+      email: rest.email || "",
+      phone: rest.phone || "",
+      sex: rest.sex || "Male",
+      duration: rest.duration || "1",
+      amountPaid: rest.amountPaid || 0,
+      due: rest.due || 0,
+      // add any other primitive fields you need
+    };
+
+    const restored = new Member(restoredData);
     await restored.save();
 
-    // Log restore
+    // Log restore with flat details
     await MemberHistory.create({
       memberId: restored._id,
       action: "Restored",
-      details: restored.toObject(),
+      details: restoredData,
       performedBy: req.user._id,
     });
 
