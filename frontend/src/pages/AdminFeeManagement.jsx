@@ -17,7 +17,7 @@ const AdminFeeManagement = () => {
 
   const fetchFees = async () => {
     try {
-      const res = await api.get("api/fees");
+      const res = await api.get("/fees");
       const data = Array.isArray(res.data.data) ? res.data.data : [];
       setFees(data);
     } catch (error) {
@@ -29,7 +29,7 @@ const AdminFeeManagement = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await api.post("api/fees", newPlan);
+      await api.post("/fees", newPlan);
       setNewPlan({ planName: "", amount: "", description: "", offer: "" });
       fetchFees();
     } catch (error) {
@@ -49,7 +49,7 @@ const AdminFeeManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`api/fees/${id}`);
+      await api.delete(`/fees/${id}`);
       setConfirmDeleteId(null);
       fetchFees();
     } catch (error) {
