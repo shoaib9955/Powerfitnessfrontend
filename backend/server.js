@@ -29,9 +29,9 @@ const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.printf(({ timestamp, level, message }) => {
-      return `[${timestamp}] ${level}: ${message}`;
-    })
+    winston.format.printf(
+      ({ timestamp, level, message }) => `[${timestamp}] ${level}: ${message}`
+    )
   ),
   transports: [
     new winston.transports.Console(),
@@ -41,38 +41,35 @@ const logger = winston.createLogger({
 
 // -------------------- Security & Body Parsers --------------------
 app.use(helmet());
-
-const allowedOrigins = [
-  "http://localhost:5173", // local dev frontend
-  "https://powerfitness13.onrender.com", // your deployed frontend
-];
-
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      // Allow requests from localhost (dev) or no origin (Postman)
-      if (!origin || origin.startsWith("http://localhost"))
-        return cb(null, true);
-      // Allow production domain
-      if (origin === "https://powerfitness13.onrender.com")
-        return cb(null, true);
-      cb(new Error(`CORS: Not allowed - ${origin}`));
-    },
-    credentials: true,
-  })
-);
-
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
+// -------------------- Rate Limiting --------------------
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT || "500", 10),
 });
 app.use(limiter);
 
-// -------------------- Routes --------------------
+// -------------------- CORS --------------------
+const allowedOrigins = [
+  "http://localhost:5173", // local dev
+  "https://powerfitness13.onrender.com", // deployed frontend
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin))
+        return callback(null, true);
+      callback(new Error(`CORS: Not allowed - ${origin}`));
+    },
+    credentials: true, // allow cookies or auth headers
+  })
+);
+
+// -------------------- API Routes --------------------
 app.use("/api/members", memberRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/receipts", receiptRoutes);
@@ -81,12 +78,11 @@ app.use("/api/fees", feeRoutes);
 
 // -------------------- Serve Frontend --------------------
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
-// -------------------- Connect to MongoDB --------------------
+// -------------------- MongoDB Connection --------------------
 mongoose
   .connect(process.env.MONGO_URI, {
     autoIndex: process.env.NODE_ENV !== "production",
@@ -104,12 +100,10 @@ mongoose
       }).catch((err) => logger.error("❌ Email error:", err));
     }
   })
-  .catch((err) => {
-    logger.error("❌ DB connection error:", err);
-  });
+  .catch((err) => logger.error("❌ DB connection error:", err));
 
 // -------------------- Start Server --------------------
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  logger.info(`🚀 Server running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () =>
+  logger.info(`🚀 Server running on http://localhost:${PORT}`)
+);
