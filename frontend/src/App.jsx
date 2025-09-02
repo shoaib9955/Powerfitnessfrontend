@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -18,6 +18,27 @@ import { AuthContext } from "./context/AuthContext";
 const App = () => {
   const { auth } = useContext(AuthContext);
   const userRole = auth?.role;
+
+  // 🔹 Splash Screen State
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate short delay before showing app
+    const timer = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 🔹 Splash screen before app loads
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-green-400">
+        <h1 className="text-4xl font-extrabold tracking-wide">
+          💪 PowerFitness
+        </h1>
+        <p className="mt-4 text-lg animate-pulse">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <Router>
