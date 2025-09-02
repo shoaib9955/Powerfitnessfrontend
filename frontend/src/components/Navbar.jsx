@@ -32,7 +32,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-green-400 to-green-700 text-white px-6 py-4 fixed w-full z-50 backdrop-blur-md">
+    <nav className="bg-gradient-to-r from-green-400 to-green-700 text-white px-6 py-4 fixed w-full z-50 backdrop-blur-lg shadow-[0_0_25px_rgba(0,255,255,0.3)]">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-wider flex items-center gap-2">
           <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
@@ -45,7 +45,7 @@ const Navbar = () => {
             <li key={link.name}>
               <Link
                 to={link.to}
-                className="transition-transform duration-300 hover:scale-110"
+                className="transition-transform duration-300 hover:scale-110 hover:text-cyan-300"
               >
                 {link.name}
               </Link>
@@ -57,7 +57,7 @@ const Navbar = () => {
               <li key={link.name}>
                 <Link
                   to={link.to}
-                  className="transition-transform duration-300 hover:scale-110"
+                  className="transition-transform duration-300 hover:scale-110 hover:text-cyan-300"
                 >
                   {link.name}
                 </Link>
@@ -68,7 +68,7 @@ const Navbar = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 px-3 py-1 rounded hover:bg-red-700 transition-transform duration-300"
+                className="bg-red-600 px-3 py-1 rounded hover:bg-red-700 hover:shadow-[0_0_15px_rgba(255,0,0,0.6)] transition-transform duration-300"
               >
                 Logout
               </button>
@@ -77,7 +77,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/login"
-                className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-300 transition-transform duration-300"
+                className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-300 hover:shadow-[0_0_15px_rgba(255,255,0,0.6)] transition-transform duration-300"
               >
                 Login
               </Link>
@@ -87,7 +87,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden flex items-center gap-2 text-2xl"
+          className="md:hidden flex items-center gap-2 text-2xl text-white"
           onClick={() => setIsOpen(!isOpen)}
         >
           ☰
@@ -99,14 +99,14 @@ const Navbar = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="md:hidden flex flex-col gap-4 mt-2 px-6 py-4 bg-gradient-to-r from-yellow-300 to-red-700/20 backdrop-blur-xl rounded-2xl absolute right-4 top-16 w-[calc(100%-2rem)]"
+          className="md:hidden flex flex-col gap-4 mt-2 px-6 py-4 bg-gradient-to-r from-purple-600 via-pink-500 to-pink-700/30 backdrop-blur-xl rounded-2xl absolute right-4 top-16 w-[calc(100%-2rem)] shadow-[0_0_20px_rgba(255,0,255,0.5)]"
         >
           {publicLinks.map((link) => (
             <li key={link.name}>
               <Link
                 to={link.to}
                 onClick={() => setIsOpen(false)}
-                className="block py-2 px-3 rounded hover:bg-white/20"
+                className="block py-2 px-3 rounded hover:bg-white/20 hover:text-cyan-200 transition-colors duration-300"
               >
                 {link.name}
               </Link>
@@ -119,7 +119,7 @@ const Navbar = () => {
                 <Link
                   to={link.to}
                   onClick={() => setIsOpen(false)}
-                  className="block py-2 px-3 rounded hover:bg-white/20"
+                  className="block py-2 px-3 rounded hover:bg-white/20 hover:text-cyan-200 transition-colors duration-300"
                 >
                   {link.name}
                 </Link>
@@ -133,7 +133,7 @@ const Navbar = () => {
                   handleLogout();
                   setIsOpen(false);
                 }}
-                className="bg-red-600 px-3 py-2 rounded hover:bg-red-700 w-full"
+                className="bg-red-600 px-3 py-2 rounded hover:bg-red-700 hover:shadow-[0_0_15px_rgba(255,0,0,0.6)] w-full transition-colors duration-300"
               >
                 Logout
               </button>
@@ -143,7 +143,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="bg-yellow-400 text-black px-3 py-2 rounded hover:bg-yellow-300 w-full"
+                className="bg-yellow-400 text-black px-3 py-2 rounded hover:bg-yellow-300 hover:shadow-[0_0_15px_rgba(255,255,0,0.6)] w-full transition-colors duration-300"
               >
                 Login
               </Link>

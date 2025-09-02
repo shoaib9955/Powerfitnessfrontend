@@ -3,55 +3,62 @@ import { FaInstagram, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-gradient-to-r from-pink-600 via-purple-800 to-indigo-900 text-white mt-12 px-6 py-14 md:px-16 text-center overflow-hidden rounded-t-3xl shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.1),transparent),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.15),transparent)] blur-2xl"></div>
+    <footer className="relative bg-gradient-to-r from-pink-600 via-purple-800 to-indigo-900 text-white mt-12 px-6 py-12 md:px-16 lg:py-16 text-center overflow-hidden rounded-t-3xl shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+      {/* Glowing background shapes */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.12),transparent)] blur-3xl"></div>
 
-      <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-10 max-w-7xl mx-auto">
+      <div className="relative z-10 flex flex-col lg:flex-row flex-wrap justify-between items-center gap-8 max-w-7xl mx-auto">
+        {/* Logo & Text */}
         <div className="text-center lg:text-left space-y-2">
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-wider drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-wider drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
             PowerFitness
           </h2>
-          <p className="text-sm md:text-base text-white/80">
-            {String("© 2025 Gym Management. All rights reserved.")}
+          <p className="text-xs sm:text-sm md:text-base text-white/70">
+            © 2025 Gym Management. All rights reserved.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-6 items-center text-sm md:text-base">
+        {/* Contact & Socials */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-center justify-center text-sm md:text-base">
+          {/* Email */}
           <div className="flex items-center gap-3 group cursor-pointer">
-            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.6)] transition">
-              <FaEnvelope className="text-yellow-300 group-hover:scale-110 transition-transform" />
+            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_30px_rgba(255,255,0,0.6)] transition-all">
+              <FaEnvelope className="text-yellow-300 group-hover:scale-110 transition-transform duration-300" />
             </span>
-            <span className="group-hover:text-yellow-200 transition">
-              {String("contact@powerfitness.com")}
+            <span className="group-hover:text-yellow-200 transition-colors duration-300">
+              contact@powerfitness.com
             </span>
           </div>
 
+          {/* Phone */}
           <div className="flex items-center gap-3 group cursor-pointer">
-            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.6)] transition">
-              <FaPhone className="text-green-300 group-hover:scale-110 transition-transform" />
+            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_30px_rgba(0,255,0,0.6)] transition-all">
+              <FaPhone className="text-green-300 group-hover:scale-110 transition-transform duration-300" />
             </span>
-            <span className="group-hover:text-green-200 transition">
-              {String("+91 1234567890")}
+            <span className="group-hover:text-green-200 transition-colors duration-300">
+              +91 1234567890
             </span>
           </div>
 
+          {/* Instagram */}
           <a
-            href="https://instagram.com/powerfitness"
+            href="https://www.instagram.com/thepowerfitness001?igsh=MWJhdHo5b3BzYzl0Zg=="
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-3 group cursor-pointer"
           >
-            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_25px_rgba(255,0,150,0.7)] transition">
-              <FaInstagram className="text-pink-400 group-hover:scale-110 transition-transform" />
+            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_30px_rgba(255,0,150,0.7)] transition-all">
+              <FaInstagram className="text-pink-400 group-hover:scale-110 transition-transform duration-300" />
             </span>
-            <span className="group-hover:text-pink-300 transition">
-              {String("Instagram")}
+            <span className="group-hover:text-pink-300 transition-colors duration-300">
+              Instagram
             </span>
           </a>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-pink-400 via-purple-500 to-yellow-400 animate-pulse"></div>
+      {/* Animated gradient line at bottom */}
+      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-pink-400 via-purple-500 to-yellow-400 animate-pulse"></div>
     </footer>
   );
 };

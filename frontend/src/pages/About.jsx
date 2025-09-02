@@ -1,10 +1,15 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import gym1 from "../assets/gym1.png";
 import gym2 from "../assets/gym2.png";
 import gym3 from "../assets/gym4.png";
 
 const About = () => {
+  useEffect(() => {
+    AOS.init({ duration: 1200, once: true, easing: "ease-in-out" });
+  }, []);
+
   const paragraphs = [
     {
       text: `Welcome to PowerFitness – the premier fitness destination in Boisar. 
@@ -33,7 +38,7 @@ const About = () => {
   return (
     <div className="pt-24 flex flex-col gap-8 relative overflow-hidden">
       {/* Animated Gradient Background */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-r from-pink-400 via-purple-500 to-yellow-400 animate-gradient-x opacity-30"></div>
+      <div className="absolute inset-0 -z-20 bg-gradient-to-r from-pink-400 via-purple-500 to-yellow-400 opacity-30 animate-gradient-x"></div>
 
       {/* Floating Glowing Shapes */}
       <div className="absolute w-72 h-72 bg-white/10 rounded-full top-10 left-10 animate-spin-slow blur-3xl"></div>
@@ -41,14 +46,14 @@ const About = () => {
       <div className="absolute w-48 h-48 bg-white/10 rounded-full top-1/3 right-1/4 animate-spin-slow blur-2xl"></div>
 
       {/* Section Title */}
-      <h1 className="relative inline-block text-center mb-12 z-10">
-        {/* Diamond Box Around Text */}
+      <h1
+        className="relative inline-block text-center mb-12 z-10"
+        data-aos="zoom-in"
+      >
         <span
           className="absolute inset-0 mx-auto my-auto w-full h-full bg-gradient-to-tr from-pink-500 via-purple-500 to-yellow-400
           transform rotate-45 rounded-lg opacity-30 animate-pulse -z-10"
         ></span>
-
-        {/* Text */}
         <span
           className="relative inline-block text-4xl md:text-6xl font-extrabold text-white tracking-wider drop-shadow-[0_0_25px_rgba(255,255,255,0.7)]"
           style={{ fontFamily: "'Poppins', sans-serif" }}
@@ -71,21 +76,18 @@ const About = () => {
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
+            data-aos={index % 2 === 0 ? "fade-right" : "fade-left"}
+            data-aos-delay={index * 200}
           >
-            {/* Animated Text */}
-            <motion.p
+            <p
               className="relative z-10 max-w-3xl text-white text-lg md:text-xl lg:text-2xl leading-relaxed font-bold px-4"
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 1, delay: index * 0.4 }}
               style={{
                 textShadow:
                   "0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4)",
               }}
             >
               {para.text}
-            </motion.p>
+            </p>
           </section>
         ))}
       </div>
