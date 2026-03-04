@@ -8,7 +8,7 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import gymImage from "../assets/gym3.jpeg";
+import gymImage from "../assets/gym5.jpeg";
 import ownerImage from "../assets/owner.jpeg";
 
 const Home = () => {
@@ -19,19 +19,19 @@ const Home = () => {
       title: "Our Story",
       icon: <FaInfoCircle size={22} />,
       link: "/about",
-      desc: "Learn about our mission and gym style."
+      desc: "Learn about our mission and gym style.",
     },
     {
       title: "Contact",
       icon: <FaPhone size={22} />,
       link: "/contact",
-      desc: "Get in touch with our team today."
+      desc: "Get in touch with our team today.",
     },
     {
       title: "Pricing",
       icon: <FaMoneyBill size={22} />,
       link: "/fees",
-      desc: "Find the best membership plan for you."
+      desc: "Find the best membership plan for you.",
     },
   ];
 
@@ -43,7 +43,7 @@ const Home = () => {
           <img
             src={gymImage}
             alt="Gym"
-            className="w-full h-full object-cover filter brightness-[0.7] contrast-125 grayscale-[0.1]"
+            className="w-full h-full object-cover filter brightness-[0.75] contrast-115 grayscale-[0.05] saturate-110"
             loading="eager"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-[var(--bg-main)]"></div>
@@ -70,9 +70,10 @@ const Home = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
           >
-            The best equipment and professional personal training in Boisar. Start your fitness journey with us today.
+            The best equipment and professional personal training in Boisar.
+            Start your fitness journey with us today.
           </motion.p>
-          
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -88,7 +89,7 @@ const Home = () => {
       <section className="max-w-7xl mx-auto py-24 px-8">
         <div className="glass-morphism rounded-[4rem] p-10 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center gap-16 shadow-indigo-900/5">
           <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -z-10 -mr-20 -mt-20"></div>
-          
+
           <motion.div
             className="relative shrink-0"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -104,7 +105,9 @@ const Home = () => {
             </div>
             <div className="absolute -bottom-4 -right-4 bg-slate-950 dark:bg-indigo-600 text-white p-5 rounded-3xl shadow-2xl flex flex-col items-center">
               <span className="text-2xl font-black leading-none">10+</span>
-              <span className="text-[10px] uppercase font-black tracking-widest text-indigo-400 dark:text-indigo-200 mt-1">Years</span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-indigo-400 dark:text-indigo-200 mt-1">
+                Years
+              </span>
             </div>
           </motion.div>
 
@@ -115,12 +118,16 @@ const Home = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <span className="text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-[0.4em] block mb-4">Founder & Head Trainer</span>
+            <span className="text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-[0.4em] block mb-4">
+              Founder & Head Trainer
+            </span>
             <h2 className="text-5xl md:text-6xl font-black text-[var(--text-primary)] mb-8 font-premium tracking-tighter uppercase">
               Shaban Qazi
             </h2>
             <p className="text-[var(--text-secondary)] text-lg md:text-xl mb-10 leading-relaxed font-medium">
-              "PowerFitness is more than just a gym. We focus on real strength training, functional movements, and proper nutrition advice to help you get results."
+              "PowerFitness is more than just a gym. We focus on real strength
+              training, functional movements, and proper nutrition advice to
+              help you get results."
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <a
@@ -133,9 +140,14 @@ const Home = () => {
               </a>
               <div className="flex -space-x-3">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-[var(--bg-surface)] bg-slate-200 dark:bg-slate-800" />
+                  <div
+                    key={i}
+                    className="w-10 h-10 rounded-full border-2 border-[var(--bg-surface)] bg-slate-200 dark:bg-slate-800"
+                  />
                 ))}
-                <div className="flex items-center pl-4 text-[var(--text-secondary)] text-xs font-bold">500+ Happy Members</div>
+                <div className="flex items-center pl-4 text-[var(--text-secondary)] text-xs font-bold">
+                  500+ Happy Members
+                </div>
               </div>
             </div>
           </motion.div>
@@ -157,8 +169,12 @@ const Home = () => {
             <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-100 dark:border-slate-700">
               {card.icon}
             </div>
-            <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 font-premium uppercase tracking-tight">{card.title}</h3>
-            <p className="text-[var(--text-secondary)] font-medium leading-relaxed">{card.desc}</p>
+            <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 font-premium uppercase tracking-tight">
+              {card.title}
+            </h3>
+            <p className="text-[var(--text-secondary)] font-medium leading-relaxed">
+              {card.desc}
+            </p>
             <div className="mt-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">
               Learn More <FaArrowRight />
             </div>

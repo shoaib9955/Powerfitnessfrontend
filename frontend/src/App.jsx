@@ -33,11 +33,20 @@ const App = () => {
   // 🔹 Splash screen before app loads
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-green-400">
-        <h1 className="text-4xl font-extrabold tracking-wide">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white">
+        <div className="relative mb-8">
+          <div className="w-20 h-20 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <div
+            className="absolute inset-0 w-20 h-20 border-4 border-transparent border-r-indigo-400 rounded-full animate-spin"
+            style={{ animationDelay: "0.15s" }}
+          ></div>
+        </div>
+        <h1 className="text-5xl font-black tracking-tight mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
           💪 PowerFitness
         </h1>
-        <p className="mt-4 text-lg animate-pulse">Loading...</p>
+        <p className="text-lg font-medium animate-pulse text-indigo-200">
+          Preparing your experience...
+        </p>
       </div>
     );
   }
