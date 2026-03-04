@@ -1,5 +1,5 @@
 // backend/server.js
-import "dotenv/config"; 
+import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -29,8 +29,8 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.printf(
-      ({ timestamp, level, message }) => `[${timestamp}] ${level}: ${message}`
-    )
+      ({ timestamp, level, message }) => `[${timestamp}] ${level}: ${message}`,
+    ),
   ),
   transports: [
     new winston.transports.Console(),
@@ -72,20 +72,20 @@ app.use(
         return callback(null, true);
       // For Vercel deployments where the preview URL changes, you may want to return true for any origin,
       // but restricting is safer. Returning true dynamically for vercel domains:
-      if (origin.endsWith('.vercel.app')) return callback(null, true);
-      
+      if (origin.endsWith(".vercel.app")) return callback(null, true);
+
       callback(new Error(`CORS: Not allowed - ${origin}`));
     },
     credentials: true, // allow cookies or auth headers
-  })
+  }),
 );
 
 // -------------------- API Routes --------------------
-app.use("/api/members", memberRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/receipts", receiptRoutes);
-app.use("/api/history", historyRoutes);
-app.use("/api/fees", feeRoutes);
+app.use("/members", memberRoutes);
+app.use("/auth", authRoutes);
+app.use("/receipts", receiptRoutes);
+app.use("/history", historyRoutes);
+app.use("/fees", feeRoutes);
 
 // -------------------- Serve Frontend (if built together) --------------------
 const frontendDistPath = path.join(__dirname, "../frontend/dist");
@@ -122,5 +122,5 @@ mongoose
 // -------------------- Start Server --------------------
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () =>
-  logger.info(`🚀 Server running on http://localhost:${PORT}`)
+  logger.info(`🚀 Server running on http://localhost:${PORT}`),
 );
