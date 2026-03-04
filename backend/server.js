@@ -1,4 +1,5 @@
 // backend/server.js
+/* global process */
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
