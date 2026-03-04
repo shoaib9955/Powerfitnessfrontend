@@ -1,26 +1,33 @@
+// src/pages/Receipt.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import api from "../api";
+import { FaPrint, FaEnvelope, FaChevronLeft, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Receipt = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({ type: "", text: "" });
+
+  const formatDate = (dateString, fallback = "N/A") => {
+    if (!dateString) return fallback;
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? fallback : date.toLocaleDateString();
+  };
 
   useEffect(() => {
     const fetchMember = async () => {
       try {
-        // ✅ Fixed template literal usage
-        const res = await api.get(`/api/members/${id}`);
-        setMember(res.data);
+        const res = await api.get(`/members/${id}`);
+        const data = res.data.data || res.data;
+        setMember(Array.isArray(data) ? data[0] : data); 
       } catch (err) {
-        console.error(
-          "Error fetching member:",
-          err.response?.data || err.message
-        );
+        console.error("Error fetching member:", err);
       } finally {
         setLoading(false);
       }
@@ -31,122 +38,208 @@ const Receipt = () => {
   const handlePrint = () => window.print();
 
   const handleSendReceipt = async () => {
-    if (!member?.email) {
-      setMessage("No email available for this member.");
+    if (!member || !member.email) {
+      setMessage({ type: "error", text: "No email available for this member." });
       return;
     }
 
     setSending(true);
-    setMessage("");
+    setMessage({ type: "", text: "" });
 
     try {
-      // ✅ Fixed template literal usage
-      const res = await api.post(`/api/members/${id}/send-receipt`);
-      setMessage(res.data.message || "Receipt sent successfully!");
+      // ✅ Corrected API Path: /receipts/:id/send-receipt
+      const res = await api.post(`/receipts/${id}/send-receipt`);
+      setMessage({ type: "success", text: res.data.message || "Receipt sent successfully!" });
     } catch (err) {
-      console.error("Send receipt error:", err.response?.data || err.message);
-      setMessage(err.response?.data?.message || "Failed to send receipt");
+      console.error("Send receipt error:", err);
+      setMessage({ type: "error", text: err.response?.data?.message || "Failed to send receipt" });
     } finally {
       setSending(false);
     }
   };
 
-  if (loading)
-    return <p className="text-center mt-20 text-xl">Loading receipt...</p>;
-  if (!member)
-    return (
-      <p className="text-center mt-20 text-red-600 text-xl">
-        ❌ Receipt not found
-      </p>
-    );
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-[var(--bg-main)]">
+      <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  if (!member) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg-main)] p-6 text-center">
+      <div className="w-20 h-20 bg-rose-50 dark:bg-rose-900/20 rounded-3xl flex items-center justify-center mb-6">
+        <FaExclamationCircle className="text-rose-500 text-3xl" />
+      </div>
+      <h2 className="text-2xl font-black text-[var(--text-primary)] uppercase tracking-tight mb-2">Receipt Not Found</h2>
+      <p className="text-[var(--text-secondary)] font-medium mb-8">We couldn't find the payment record for this member.</p>
+      <button onClick={() => navigate('/members')} className="premium-button bg-slate-950 dark:bg-indigo-600 text-white px-8 py-3 uppercase text-xs tracking-widest">
+        Go to Member List
+      </button>
+    </div>
+  );
 
   return (
-    <div className="max-w-2xl mx-auto mt-24 p-6 bg-white print:bg-white rounded-3xl shadow-xl border print:border print:shadow-none">
-      <div className="flex justify-center mb-4">
-        <img src={logo} alt="Logo" className="w-24 h-24 object-contain" />
-      </div>
+    <div className="min-h-screen bg-[var(--bg-main)] pt-24 pb-16 px-4">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page { size: portrait; margin: 0; }
+          html, body { 
+            height: 100vh !important; 
+            overflow: hidden !important; 
+            margin: 0 !important; 
+            padding: 0 !important;
+            -webkit-print-color-adjust: exact; 
+            background: white !important;
+            color: black !important;
+          }
+          .no-print, .print-footer { display: none !important; }
+          .print-container { 
+            box-shadow: none !important; 
+            border: none !important; 
+            margin: 0 !important; 
+            padding: 0.5cm !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: white !important;
+          }
+          .premium-card { 
+            margin: 0 !important; 
+            border: 1px solid #f1f5f9 !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            background: white !important;
+            color: black !important;
+          }
+          .text-\[var\(--text-primary\)\] { color: black !important; }
+          .text-\[var\(--text-secondary\)\] { color: #64748b !important; }
+          .border-\[var\(--border-color\)\] { border-color: #f1f5f9 !important; }
+          .bg-\[var\(--bg-main\)\], .bg-slate-50 { background-color: white !important; }
+        }
+      `}} />
 
-      <h2 className="text-3xl font-bold text-center mb-2 print:text-3xl">
-        🧾 Payment Receipt
-      </h2>
-      <p className="text-center text-gray-600 mb-6 print:text-base">
-        Thank you for choosing <strong>PowerFitness</strong>!
-      </p>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-2xl mx-auto print-container"
+      >
+        <div className="premium-card overflow-hidden mt-8">
+          <div className="p-8 md:p-10">
+            {/* Header */}
+            <div className="flex flex-col items-center text-center mb-8">
+              <img src={logo} alt="PowerFitness" className="w-14 h-14 object-contain mb-3 dark:invert" />
+              <h1 className="text-xl font-black text-[var(--text-primary)] tracking-tight uppercase">Payment Receipt</h1>
+              <div className="text-[9px] text-indigo-600 dark:text-indigo-400 font-black tracking-widest uppercase mt-1">
+                PowerFitness Elite Gym
+              </div>
+            </div>
 
-      <div className="space-y-3 border border-gray-200 rounded-xl p-5 print:border print:p-5">
-        <div className="flex justify-between">
-          <span className="font-semibold">Name:</span>
-          <span>{member.name}</span>
+            {/* Member Info */}
+            <div className="grid grid-cols-2 gap-6 mb-8 py-6 border-y border-[var(--border-color)]">
+              <div className="space-y-3">
+                <DetailRow label="Member Name" value={member.name} highlight />
+                <DetailRow label="Phone" value={member.phone} />
+                <DetailRow label="Plan" value={`${member.duration} Month(s)`} />
+              </div>
+              <div className="space-y-3 text-right">
+                <DetailRow label="Receipt ID" value={member._id?.slice(-8).toUpperCase()} right />
+                <DetailRow label="Date" value={formatDate(member.createdAt)} right />
+                <DetailRow label="Status" value={member.due > 0 ? "Pending" : "Paid"} 
+                  color={member.due > 0 ? "text-rose-600" : "text-emerald-600"} right />
+              </div>
+            </div>
+
+            {/* Payment Summary */}
+            <div className="mb-8">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold">
+                  <span className="text-[var(--text-secondary)] font-medium">Membership Fee</span>
+                  <span className="text-[var(--text-primary)]">₹ {Number(member.amountPaid || 0) + Number(member.due || 0)}.00</span>
+                </div>
+                {member.due > 0 && (
+                  <div className="flex justify-between items-center text-xs font-bold">
+                    <span className="text-[var(--text-secondary)] font-medium">Balance Due</span>
+                    <span className="text-rose-500">₹ {member.due}.00</span>
+                  </div>
+                )}
+                <div className="h-px bg-[var(--border-color)] my-3" />
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-0.5">Total Paid</span>
+                    <span className="text-2xl font-black text-[var(--text-primary)] tracking-tighter">₹ {member.amountPaid}.00</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-0.5">Valid Until</span>
+                    <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 tracking-tight">{formatDate(member.expiryDate)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center pt-6 border-t border-[var(--border-color)] print-footer">
+              <p className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest leading-relaxed">
+                Thank you for choosing PowerFitness. <br />
+                Generated on {new Date().toLocaleDateString()}.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Phone:</span>
-          <span>{member.phone}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Email:</span>
-          <span>{member.email || "-"}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Sex:</span>
-          <span>{member.sex}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Duration:</span>
-          <span>{member.duration}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Amount Paid:</span>
-          <span>₹ {member.amountPaid || 0}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Due:</span>
-          <span className={member.due > 0 ? "text-red-600" : "text-green-600"}>
-            ₹ {member.due || 0}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Joined:</span>
-          <span>{new Date(member.createdAt).toLocaleDateString()}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Expiry:</span>
-          <span>{new Date(member.expiryDate).toLocaleDateString()}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-semibold">Status:</span>
-          <span
-            className={
-              member.due > 0
-                ? "text-red-600 font-bold"
-                : "text-green-600 font-bold"
-            }
+
+        {/* Action Buttons */}
+        <div className="mt-8 flex justify-center gap-4 no-print">
+          <button 
+            onClick={() => navigate(-1)}
+            className="px-6 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-secondary)] rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 font-black text-[10px] uppercase tracking-widest transition-all"
           >
-            {member.due > 0 ? "Pending" : "Paid"}
-          </span>
+            Back
+          </button>
+          <button 
+            onClick={handlePrint}
+            className="px-6 py-3 bg-slate-950 dark:bg-slate-800 text-white rounded-2xl hover:bg-black dark:hover:bg-slate-700 font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-slate-200 dark:shadow-none"
+          >
+            <FaPrint className="inline mr-2" /> Print Receipt
+          </button>
+          <button 
+            onClick={handleSendReceipt}
+            disabled={sending}
+            className={`px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
+              sending ? 'bg-indigo-300' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100 dark:shadow-none'
+            }`}
+          >
+            <FaEnvelope className="inline mr-2" /> {sending ? "Sending..." : "Email Receipt"}
+          </button>
         </div>
-      </div>
 
-      <div className="mt-6 flex flex-col md:flex-row justify-center gap-4 print:hidden">
-        <button
-          onClick={handlePrint}
-          className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full font-semibold transition-transform hover:scale-105"
-        >
-          🖨️ Print
-        </button>
-        <button
-          onClick={handleSendReceipt}
-          disabled={sending}
-          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-full font-semibold transition-transform hover:scale-105 disabled:opacity-50"
-        >
-          {sending ? "Sending..." : "📧 Send Receipt"}
-        </button>
-      </div>
-
-      {message && (
-        <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
-      )}
+        <AnimatePresence>
+          {message.text && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className={`mt-6 p-4 rounded-xl text-center text-xs font-black uppercase tracking-widest border ${
+                message.type === "success" 
+                  ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50" 
+                  : "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-900/50"
+              }`}
+            >
+              {message.text}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };
+
+const DetailRow = ({ label, value, highlight, color, right }) => (
+  <div className={right ? "text-right" : ""}>
+    <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-1">{label}</span>
+    <span className={`${highlight ? "text-lg font-black text-[var(--text-primary)]" : "text-sm font-bold text-[var(--text-primary)] opacity-80"} ${color || ""}`}>
+      {value || "N/A"}
+    </span>
+  </div>
+);
 
 export default Receipt;

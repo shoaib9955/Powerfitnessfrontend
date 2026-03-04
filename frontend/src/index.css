@@ -1,1 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+:root {
+  --bg-main: #f8fafc;
+  --bg-surface: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border-color: #f1f5f9;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+  
+  --premium-indigo: #4f46e5;
+  --premium-rose: #e11d48;
+}
+
+.dark {
+  --bg-main: #020617;
+  --bg-surface: #0f172a;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: #1e293b;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(15, 23, 42, 0.8);
+  --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  @apply antialiased transition-colors duration-300;
+}
+
+h1, h2, h3, h4, .font-premium {
+  font-family: 'Outfit', sans-serif;
+}
+
+.glass-morphism {
+  background-color: var(--glass-bg);
+  @apply backdrop-blur-md border border-[var(--border-color)] shadow-xl transition-all duration-300;
+}
+
+.premium-card {
+  background-color: var(--bg-surface);
+  @apply rounded-[2rem] border border-[var(--border-color)] transition-all duration-300;
+  box-shadow: var(--card-shadow);
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+.premium-button {
+  @apply px-6 py-3 rounded-2xl font-bold transition-all duration-300 transform active:scale-95 shadow-lg flex items-center justify-center gap-2;
+}
+
+/* Global Form Styles */
+input:not([type="checkbox"]):not([type="radio"]), 
+textarea, 
+select {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  @apply transition-all duration-300;
+}
+
+input::placeholder, 
+textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+  @apply ring-2 ring-indigo-500/20 border-indigo-500/50 outline-none;
+}
+
+/* Fix for Chrome autofill background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-primary);
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-surface) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Print Overrides */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    font-size: 12pt;
+  }
+  @page {
+    margin: 1cm;
+    size: auto;
+  }
+}

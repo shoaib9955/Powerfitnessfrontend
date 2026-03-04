@@ -3,14 +3,15 @@ import mongoose from "mongoose";
 const memberSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true },
     phone: { type: String, required: true, unique: true },
-    duration: { type: mongoose.Schema.Types.Mixed, default: "" }, // can store string or number
-    amountPaid: { type: mongoose.Schema.Types.Mixed, default: "" }, // string or number
-    due: { type: mongoose.Schema.Types.Mixed, default: "" }, // string or number
+    sex: { type: String, enum: ["Male", "Female"], default: "Male" },
+    duration: { type: Number, default: 1 }, // in months
+    amountPaid: { type: Number, default: 0 },
+    due: { type: Number, default: 0 },
     avatar: { type: String, default: null },
+    expiryDate: { type: Date },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    joiningDate: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

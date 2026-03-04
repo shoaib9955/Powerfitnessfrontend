@@ -1,5 +1,4 @@
 // utils/createAdmin.js
-import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 
 const createAdmin = async () => {
@@ -8,19 +7,18 @@ const createAdmin = async () => {
       username: process.env.ADMIN_USERNAME,
     });
 
+    const adminData = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+      role: "admin",
+    };
+
     if (existingAdmin) {
-      console.log("⚠️ Admin already exists");
+      // Do NOT overwrite password on restart. This allows admin to keep custom Settings passwords.
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
-
-    const admin = new User({
-      username: process.env.ADMIN_USERNAME,
-      password: hashedPassword,
-      role: "admin",
-    });
-
+    const admin = new User(adminData);
     await admin.save();
     console.log("✅ Admin created successfully");
   } catch (error) {

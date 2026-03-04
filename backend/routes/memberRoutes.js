@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import Member from "../models/memberModel.js";
 import MemberHistory from "../models/historyModel.js";
 import authMiddleware, {
@@ -62,6 +63,31 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
+// GET single member by ID
+router.get("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid ID format" });
+    }
+
+    const member = await Member.findById(id).populate(
+      "createdBy",
+      "username role",
+    );
+    if (!member) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    }
+    res.json({ success: true, data: member });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // CREATE member
 router.post(
   "/",
@@ -75,11 +101,20 @@ router.post(
       return res.status(400).json({ success: false, errors: errors.array() });
 
     try {
+      // Calculate Expiry Date
+      const durationMonths = parseInt(req.body.duration) || 1;
+      const expiryDate = new Date();
+      expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
+
       const memberData = {
         ...req.body,
+        expiryDate,
+        amountPaid: parseFloat(req.body.amountPaid) || 0,
+        due: parseFloat(req.body.due) || 0,
         avatar: req.file ? `/uploads/members/${req.file.filename}` : null,
         createdBy: req.user._id,
       };
+
       const member = new Member(memberData);
       await member.save();
 
@@ -107,10 +142,16 @@ router.post(
         },
       });
     } catch (err) {
+      if (err.code === 11000) {
+        return res.status(400).json({
+          success: false,
+          message: `Member with this phone number already exists.`,
+        });
+      }
       console.error("❌ Add member error:", err.message);
       res.status(500).json({ success: false, message: err.message });
     }
-  }
+  },
 );
 
 // UPDATE member
@@ -131,19 +172,33 @@ router.put(
         "name",
         "email",
         "phone",
+        "sex",
         "duration",
         "amountPaid",
         "due",
         "sex",
       ];
+
+      const wasDurationUpdated =
+        req.body.duration !== undefined && req.body.duration !== "";
+
       updateFields.forEach((key) => {
-        if (
-          req.body[key] !== undefined &&
-          req.body[key] !== null &&
-          req.body[key] !== ""
-        )
-          member[key] = req.body[key];
+        if (req.body[key] !== undefined && req.body[key] !== null) {
+          if (["amountPaid", "due", "duration"].includes(key)) {
+            member[key] = parseFloat(req.body[key]) || 0;
+          } else {
+            member[key] = req.body[key];
+          }
+        }
       });
+
+      // Recalculate Expiry if duration changed
+      if (wasDurationUpdated) {
+        const durationMonths = parseInt(req.body.duration) || 1;
+        const expiryDate = new Date(); // Reset from today or original joining? AddMember uses today.
+        expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
+        member.expiryDate = expiryDate;
+      }
 
       if (req.file) member.avatar = `/uploads/members/${req.file.filename}`;
 
@@ -172,12 +227,18 @@ router.put(
         },
       });
     } catch (err) {
+      if (err.code === 11000) {
+        return res.status(400).json({
+          success: false,
+          message: `Conflict: Another member already has this phone number.`,
+        });
+      }
       console.error("Update error:", err);
       res
         .status(500)
         .json({ success: false, message: "Failed to update member" });
     }
-  }
+  },
 );
 
 // DELETE member permanently
@@ -244,25 +305,22 @@ router.post(
           .json({ success: false, message: "Invalid history snapshot" });
       }
 
-      const details = history.details.toObject
-        ? history.details.toObject()
-        : { ...history.details };
+      // Convert details to plain object safely
+      const details = JSON.parse(JSON.stringify(history.details));
 
       delete details._id;
+      delete details.id;
       delete details.__v;
       delete details.createdAt;
       delete details.updatedAt;
 
-      const query = [];
-      if (details.email) query.push({ email: details.email });
-      if (details.phone) query.push({ phone: details.phone });
-
-      if (query.length > 0) {
-        const existing = await Member.findOne({ $or: query });
+      // Build a safe query (only include valid fields)
+      if (details.phone) {
+        const existing = await Member.findOne({ phone: details.phone });
         if (existing) {
           return res.status(400).json({
             success: false,
-            message: "Member with same email/phone already exists",
+            message: "Member with same phone number already exists",
           });
         }
       }
@@ -277,7 +335,11 @@ router.post(
         performedBy: req.user._id,
       });
 
-      res.json({
+      // Update the original history action so it can't be restored again
+      history.action = "Restored";
+      await history.save();
+
+      return res.json({
         success: true,
         member: {
           _id: restored._id,
@@ -297,7 +359,7 @@ router.post(
         .status(500)
         .json({ success: false, message: "Error restoring member" });
     }
-  }
+  },
 );
 
 export default router;

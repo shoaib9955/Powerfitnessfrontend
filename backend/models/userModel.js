@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
     password: { type: String, required: true, minlength: 6 },
+    emailForReceipts: { type: String, default: "" }, // Custom sender email for receipts
     role: { type: String, enum: ["admin", "user"], default: "user" },
   },
   { timestamps: true }

@@ -21,8 +21,7 @@ const AdminFeeManagement = () => {
       const data = Array.isArray(res.data.data) ? res.data.data : [];
       setFees(data);
     } catch (error) {
-      console.error("Failed to fetch fees:", error);
-      setFees([]); // fallback
+      setFees([]);
     }
   };
 
@@ -33,17 +32,16 @@ const AdminFeeManagement = () => {
       setNewPlan({ planName: "", amount: "", description: "", offer: "" });
       fetchFees();
     } catch (error) {
-      console.error("Failed to add fee:", error);
-      alert(error.response?.data?.message || "Failed to add fee");
+      alert(error.response?.data?.message || "Failed to add fee plan.");
     }
   };
 
   const handleUpdate = async (id, updatedFee) => {
     try {
-      await api.put(`api/fees/${id}`, updatedFee);
+      await api.put(`/fees/${id}`, updatedFee);
       fetchFees();
     } catch (error) {
-      console.error("Failed to update fee:", error);
+      alert("Update failed.");
     }
   };
 
@@ -53,148 +51,108 @@ const AdminFeeManagement = () => {
       setConfirmDeleteId(null);
       fetchFees();
     } catch (error) {
-      console.error("Failed to delete fee:", error);
+      alert("Deletion failed.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 md:p-20">
-      {/* Add New Fee Plan Form */}
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-10 mb-30">
-        <h2 className="text-2xl font-semibold mb-4 text-green-600">
-          Add New Fee Plan
-        </h2>
-        <form className="grid gap-4 md:grid-cols-2" onSubmit={handleAdd}>
-          <input
-            type="text"
-            placeholder="Plan Name"
-            value={newPlan.planName}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, planName: e.target.value })
-            }
-            className="border px-3 py-2 rounded w-full"
-            required
-          />
-          <input
-            type="number"
-            placeholder="Amount"
-            value={newPlan.amount}
-            onChange={(e) => setNewPlan({ ...newPlan, amount: e.target.value })}
-            className="border px-3 py-2 rounded w-full"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={newPlan.description}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, description: e.target.value })
-            }
-            className="border px-3 py-2 rounded w-full col-span-2"
-          />
-          <input
-            type="text"
-            placeholder="Offer"
-            value={newPlan.offer}
-            onChange={(e) => setNewPlan({ ...newPlan, offer: e.target.value })}
-            className="border px-3 py-2 rounded w-full col-span-2"
-          />
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 col-span-2"
-          >
-            Add Plan
-          </button>
-        </form>
-      </div>
-
-      {/* Existing Fees Section */}
-      <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-4 text-green-600">
-          Existing Fee Plans
-        </h2>
-
-        {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="min-w-[700px] w-full border-collapse border border-gray-300 text-left">
-            <thead className="bg-green-100">
-              <tr>
-                <th className="px-4 py-2 border">Plan Name</th>
-                <th className="px-4 py-2 border">Amount</th>
-                <th className="px-4 py-2 border">Description</th>
-                <th className="px-4 py-2 border">Offer</th>
-                <th className="px-4 py-2 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {fees.map((fee) => (
-                <EditableRow
-                  key={fee._id}
-                  fee={fee}
-                  handleUpdate={handleUpdate}
-                  handleDelete={handleDelete}
-                  confirmDeleteId={confirmDeleteId}
-                  setConfirmDeleteId={setConfirmDeleteId}
-                />
-              ))}
-            </tbody>
-          </table>
+    <div className="min-h-screen bg-[var(--bg-main)] p-8 md:p-16 pt-64">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-16 px-4 text-center md:text-left">
+          <span className="text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-[0.4em] block mb-4">Settings</span>
+          <h1 className="text-5xl font-black text-[var(--text-primary)] font-premium tracking-tight uppercase">Manage <span className="text-indigo-600 dark:text-indigo-400">Plans</span></h1>
+          <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-[0.3em] mt-2">Add and update membership plans for your gym</p>
         </div>
 
-        {/* Mobile Cards */}
-        <div className="md:hidden flex flex-col gap-4">
-          {fees.map((fee) => (
-            <div
-              key={fee._id}
-              className="bg-green-50 p-4 rounded-lg shadow flex flex-col gap-2"
-            >
-              <p>
-                <span className="font-semibold">Plan Name:</span> {fee.planName}
-              </p>
-              <p>
-                <span className="font-semibold">Amount:</span> {fee.amount}
-              </p>
-              <p>
-                <span className="font-semibold">Description:</span>{" "}
-                {fee.description}
-              </p>
-              <p>
-                <span className="font-semibold">Offer:</span> {fee.offer}
-              </p>
-              <div className="flex gap-2 mt-2">
-                {confirmDeleteId === fee._id ? (
-                  <>
-                    <span>Are you sure?</span>
-                    <button
-                      onClick={() => handleDelete(fee._id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      onClick={() => setConfirmDeleteId(null)}
-                      className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
-                    >
-                      No
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => setConfirmDeleteId(fee._id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Add New Fee Plan Form */}
+          <div className="lg:col-span-4">
+            <div className="premium-card p-10 sticky top-32">
+              <h2 className="text-xl font-black mb-8 text-[var(--text-primary)] font-premium uppercase tracking-tighter">
+                Add Plan
+              </h2>
+              <form className="space-y-6" onSubmit={handleAdd}>
+                <Input 
+                  label="Plan Name"
+                  placeholder="e.g. 1 Month Access"
+                  value={newPlan.planName}
+                  onChange={(e) => setNewPlan({ ...newPlan, planName: e.target.value })}
+                  required
+                />
+                <Input 
+                  label="Price (₹)"
+                  type="number"
+                  placeholder="0.00"
+                  value={newPlan.amount}
+                  onChange={(e) => setNewPlan({ ...newPlan, amount: e.target.value })}
+                  required
+                />
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] block ml-1">Plan Description</label>
+                  <textarea 
+                    placeholder="Tier features and benefits..."
+                    value={newPlan.description}
+                    onChange={(e) => setNewPlan({ ...newPlan, description: e.target.value })}
+                    className="w-full p-4 rounded-2xl border border-[var(--border-color)] bg-slate-50 dark:bg-slate-800 focus:ring-4 focus:ring-indigo-500/5 outline-none font-bold text-[var(--text-primary)] transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 min-h-[100px]"
+                  />
+                </div>
+                <Input 
+                  label="Special Offer"
+                  placeholder="e.g. 20% Discount"
+                  value={newPlan.offer}
+                  onChange={(e) => setNewPlan({ ...newPlan, offer: e.target.value })}
+                />
                 <button
-                  onClick={() => handleUpdate(fee._id, fee)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                  type="submit"
+                  className="premium-button w-full bg-indigo-600 text-white hover:bg-indigo-700 mt-4 shadow-xl shadow-indigo-100 dark:shadow-none"
                 >
-                  Edit
+                  Save Plan
                 </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Existing Fees Section */}
+          <div className="lg:col-span-8">
+            <div className="premium-card overflow-hidden">
+              <div className="px-8 py-6 border-b border-[var(--border-color)] flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+                <h2 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-[0.2em]">Current Plans</h2>
+                <span className="bg-[var(--bg-main)] px-3 py-1 rounded-full text-[9px] font-black text-indigo-600 dark:text-indigo-400 border border-[var(--border-color)] uppercase tracking-widest">{fees.length} Total</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-slate-50/30 dark:bg-slate-800/10 border-b border-[var(--border-color)]">
+                      <th className="px-8 py-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Plan Name</th>
+                      <th className="px-8 py-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Price</th>
+                      <th className="px-8 py-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] text-right">Options</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--border-color)] text-[var(--text-primary)]">
+                    {fees.map((fee) => (
+                      <EditableRow
+                        key={fee._id}
+                        fee={fee}
+                        handleUpdate={handleUpdate}
+                        handleDelete={handleDelete}
+                        confirmDeleteId={confirmDeleteId}
+                        setConfirmDeleteId={setConfirmDeleteId}
+                      />
+                    ))}
+                    {fees.length === 0 && (
+                      <tr>
+                        <td colSpan="3" className="px-8 py-20 text-center">
+                          <p className="text-[var(--text-secondary)] font-black uppercase text-[10px] tracking-widest">No plans defined in the registry</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
@@ -211,117 +169,129 @@ const EditableRow = ({
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({ ...fee });
 
-  return (
-    <tr>
-      <td className="px-4 py-2 border">
-        {editing ? (
-          <input
-            value={editData.planName}
-            onChange={(e) =>
-              setEditData({ ...editData, planName: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
-          />
-        ) : (
-          fee.planName
-        )}
-      </td>
-      <td className="px-4 py-2 border">
-        {editing ? (
-          <input
-            type="number"
-            value={editData.amount}
-            onChange={(e) =>
-              setEditData({ ...editData, amount: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
-          />
-        ) : (
-          fee.amount
-        )}
-      </td>
-      <td className="px-4 py-2 border">
-        {editing ? (
-          <input
-            value={editData.description || ""}
-            onChange={(e) =>
-              setEditData({ ...editData, description: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
-          />
-        ) : (
-          fee.description
-        )}
-      </td>
-      <td className="px-4 py-2 border">
-        {editing ? (
-          <input
-            value={editData.offer || ""}
-            onChange={(e) =>
-              setEditData({ ...editData, offer: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
-          />
-        ) : (
-          fee.offer
-        )}
-      </td>
-      <td className="px-4 py-2 border flex gap-2">
-        {editing ? (
-          <>
+  if (editing) {
+    return (
+      <tr className="bg-indigo-50/30 dark:bg-indigo-900/10">
+        <td className="px-8 py-6">
+           <input
+             value={editData.planName}
+             onChange={(e) => setEditData({ ...editData, planName: e.target.value })}
+             className="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-primary)] text-sm"
+           />
+           <input
+             placeholder="Short Description"
+             value={editData.description || ""}
+             onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+             className="w-full p-2 mt-2 rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] focus:ring-4 focus:ring-indigo-500/5 outline-none font-medium text-[var(--text-secondary)] text-[10px] placeholder:text-slate-300 dark:placeholder:text-slate-600"
+           />
+        </td>
+        <td className="px-8 py-6">
+           <div className="flex items-center gap-2">
+             <span className="text-[var(--text-secondary)] font-bold text-xs">₹</span>
+             <input
+               type="number"
+               value={editData.amount}
+               onChange={(e) => setEditData({ ...editData, amount: e.target.value })}
+               className="w-24 p-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-primary)] text-sm"
+             />
+           </div>
+           <input
+             placeholder="Offer Text"
+             value={editData.offer || ""}
+             onChange={(e) => setEditData({ ...editData, offer: e.target.value })}
+             className="w-full p-2 mt-2 rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] focus:ring-4 focus:ring-indigo-500/5 outline-none font-medium text-[var(--text-secondary)] text-[10px] placeholder:text-slate-300 dark:placeholder:text-slate-600"
+           />
+        </td>
+        <td className="px-8 py-6">
+          <div className="flex justify-end gap-2">
             <button
               onClick={() => {
                 handleUpdate(fee._id, editData);
                 setEditing(false);
               }}
-              className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-[9px] font-black uppercase tracking-widest"
             >
               Save
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500"
+              className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-all text-[9px] font-black uppercase tracking-widest"
             >
               Cancel
             </button>
-          </>
-        ) : (
-          <>
-            {confirmDeleteId === fee._id ? (
-              <>
-                <span>Are you sure?</span>
-                <button
-                  onClick={() => handleDelete(fee._id)}
-                  className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setConfirmDeleteId(null)}
-                  className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500"
-                >
-                  No
-                </button>
-              </>
-            ) : (
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <tr className="group hover:bg-slate-50/50 transition-colors">
+      <td className="px-8 py-6">
+        <div className="font-black text-slate-950 uppercase tracking-tight text-sm">{fee.planName}</div>
+        <div className="text-[10px] font-medium text-slate-400 mt-1 max-w-[200px] truncate">{fee.description || "No manual summary provided."}</div>
+      </td>
+      <td className="px-8 py-6">
+        <div className="text-sm font-black text-slate-950 font-premium">₹{fee.amount}</div>
+        {fee.offer && (
+          <div className="text-[9px] font-black text-indigo-600 uppercase tracking-widest mt-1">
+            <span className="bg-indigo-50 px-2 py-0.5 rounded-md">{fee.offer}</span>
+          </div>
+        )}
+      </td>
+      <td className="px-8 py-6">
+        <div className="flex justify-end gap-3">
+          {confirmDeleteId === fee._id ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100">Confirm?</span>
+              <button
+                onClick={() => handleDelete(fee._id)}
+                className="p-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+              </button>
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="p-2 bg-slate-200 text-slate-600 rounded-lg hover:bg-slate-300"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => setEditing(true)}
+                className="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm group-hover:shadow-indigo-100"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
               <button
                 onClick={() => setConfirmDeleteId(fee._id)}
-                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"
               >
-                Delete
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
               </button>
-            )}
-            <button
-              onClick={() => setEditing(true)}
-              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
-            >
-              Edit
-            </button>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </td>
     </tr>
   );
 };
+
+// Reusable Input Component (Sync with AddMember)
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-3 ml-1">{label}</label>
+    <input 
+      {...props}
+      className="w-full p-4 rounded-2xl border border-slate-100 bg-slate-50 focus:ring-4 focus:ring-indigo-500/5 outline-none font-bold text-slate-700 transition-all placeholder:text-slate-300" 
+    />
+  </div>
+);
 
 export default AdminFeeManagement;

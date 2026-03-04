@@ -3,62 +3,73 @@ import { FaInstagram, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-gradient-to-r from-pink-600 via-purple-800 to-indigo-900 text-white mt-12 px-6 py-12 md:px-16 lg:py-16 text-center overflow-hidden rounded-t-3xl shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-      {/* Glowing background shapes */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.12),transparent)] blur-3xl"></div>
+    <footer className="bg-slate-950 text-white mt-20 relative overflow-hidden">
+      {/* Decorative architectural lines */}
+      <div className="absolute top-0 left-0 w-full h-px bg-slate-800 pointer-events-none"></div>
+      <div className="absolute top-0 right-1/4 w-px h-full bg-slate-800 pointer-events-none hidden md:block"></div>
+      
+      <div className="max-w-7xl mx-auto px-8 py-20 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
+          
+          <div className="md:col-span-4">
+            <h2 className="text-3xl font-black font-premium tracking-tighter uppercase mb-6">
+              Power<span className="text-indigo-500">Fitness</span>
+            </h2>
+            <p className="text-slate-400 font-medium leading-relaxed max-w-xs">
+              Your premium fitness destination in Boisar. Start your transformation today with elite training and professional support.
+            </p>
+          </div>
 
-      <div className="relative z-10 flex flex-col lg:flex-row flex-wrap justify-between items-center gap-8 max-w-7xl mx-auto">
-        {/* Logo & Text */}
-        <div className="text-center lg:text-left space-y-2">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-wider drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
-            PowerFitness
-          </h2>
-          <p className="text-xs sm:text-sm md:text-base text-white/70">
-            © 2025 Gym Management. All rights reserved.
-          </p>
+          <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
+            <div>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-6">Quick Links</h3>
+              <ul className="space-y-4 text-xs font-bold uppercase tracking-widest text-slate-300">
+                <li><a href="/" className="hover:text-indigo-400 transition-colors">Home</a></li>
+                <li><a href="/about" className="hover:text-indigo-400 transition-colors">About Us</a></li>
+                <li><a href="/fees" className="hover:text-indigo-400 transition-colors">Pricing</a></li>
+                <li><a href="/contact" className="hover:text-indigo-400 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-6">Contact Us</h3>
+              <ul className="space-y-4 text-xs font-bold uppercase tracking-widest text-slate-300">
+                <li className="flex items-center gap-3">
+                  <FaPhone className="text-indigo-500" /> 
+                  <a href="tel:8080666585" className="hover:text-indigo-400">8080666585</a>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FaEnvelope className="text-indigo-500" /> 
+                  inquire@powerfitness.com
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-6">Social</h3>
+              <a
+                href="https://instagram.com/thepowerfitness001"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all group"
+              >
+                <FaInstagram className="text-xl group-hover:text-indigo-400" />
+                <span className="text-[10px] font-black uppercase tracking-widest">@powerfitness</span>
+              </a>
+            </div>
+          </div>
         </div>
 
-        {/* Contact & Socials */}
-        <div className="flex flex-col sm:flex-row flex-wrap gap-6 items-center justify-center text-sm md:text-base">
-          {/* Email */}
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_30px_rgba(255,255,0,0.6)] transition-all">
-              <FaEnvelope className="text-yellow-300 group-hover:scale-110 transition-transform duration-300" />
-            </span>
-            <span className="group-hover:text-yellow-200 transition-colors duration-300">
-              contact@powerfitness.com
-            </span>
+        <div className="mt-20 pt-10 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
+            © 2026 PowerFitness. All rights reserved.
+          </p>
+          <div className="flex gap-8 text-[9px] font-black text-slate-600 uppercase tracking-widest">
+             <span className="hover:text-slate-400 cursor-pointer transition-colors">Privacy Policy</span>
+             <span className="hover:text-slate-400 cursor-pointer transition-colors">Terms of Service</span>
           </div>
-
-          {/* Phone */}
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_30px_rgba(0,255,0,0.6)] transition-all">
-              <FaPhone className="text-green-300 group-hover:scale-110 transition-transform duration-300" />
-            </span>
-            <span className="group-hover:text-green-200 transition-colors duration-300">
-              +91 1234567890
-            </span>
-          </div>
-
-          {/* Instagram */}
-          <a
-            href="https://www.instagram.com/thepowerfitness001?igsh=MWJhdHo5b3BzYzl0Zg=="
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 group cursor-pointer"
-          >
-            <span className="bg-white/10 backdrop-blur-md p-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_30px_rgba(255,0,150,0.7)] transition-all">
-              <FaInstagram className="text-pink-400 group-hover:scale-110 transition-transform duration-300" />
-            </span>
-            <span className="group-hover:text-pink-300 transition-colors duration-300">
-              Instagram
-            </span>
-          </a>
         </div>
       </div>
-
-      {/* Animated gradient line at bottom */}
-      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-pink-400 via-purple-500 to-yellow-400 animate-pulse"></div>
     </footer>
   );
 };

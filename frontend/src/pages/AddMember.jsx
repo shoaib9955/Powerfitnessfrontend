@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { motion } from "framer-motion";
 import api from "../api"; // centralized Axios instance
 import { Link, useNavigate } from "react-router-dom";
 
@@ -36,7 +37,7 @@ const AddMember = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setMemberCreated(res.data);
+      setMemberCreated(res.data.data || res.data);
 
       // Reset form
       setFormData({
@@ -67,119 +68,146 @@ const AddMember = () => {
   };
 
   return (
-    <div className="pt-24 max-w-md mx-auto">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-lg p-6"
-      >
-        <h2 className="text-xl font-bold mb-4 text-center">Add New Member</h2>
-        {message.text && (
-          <p
-            className={`mb-4 text-center font-semibold ${
-              message.type === "success" ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {message.text}
-          </p>
-        )}
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
-          required
-        />
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone"
-          value={formData.phone}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
-        />
-        <select
-          name="sex"
-          value={formData.sex}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
+    <div className="min-h-screen p-8 md:p-16 bg-[var(--bg-main)] pt-64">
+      <div className="max-w-2xl mx-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="premium-card p-10 md:p-16 relative overflow-hidden"
         >
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-        <select
-          name="duration"
-          value={formData.duration}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
-        >
-          <option value="1">1 Month</option>
-          <option value="3">3 Months</option>
-          <option value="6">6 Months</option>
-          <option value="12">1 Year</option>
-        </select>
-        <input
-          type="number"
-          name="amountPaid"
-          placeholder="Amount Paid"
-          value={formData.amountPaid}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
-        />
-        <input
-          type="number"
-          name="due"
-          placeholder="Due Amount"
-          value={formData.due}
-          onChange={handleChange}
-          className="border p-2 rounded w-full mb-3"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={(e) => setAvatar(e.target.files[0])}
-          className="mb-3"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className={`${
-            loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
-          } text-white py-2 px-4 rounded w-full`}
-        >
-          {loading ? "Adding..." : "Add Member"}
-        </button>
-      </form>
+          {/* Decorative Pattern */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-bl-[120px] -z-10" />
+          
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-100 dark:shadow-none">
+               <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+               </svg>
+            </div>
+            <h2 className="text-4xl font-black text-[var(--text-primary)] font-premium tracking-tight uppercase">Add Member</h2>
+            <p className="text-[var(--text-secondary)] font-bold text-xs uppercase tracking-[0.3em] mt-3">Create new member profile</p>
+          </div>
 
-      {memberCreated && (
-        <div className="mt-4 flex flex-col gap-2">
-          <Link
-            to={`/receipt/${memberCreated._id}`}
-            className="bg-yellow-400 text-green-700 py-2 px-4 rounded text-center"
-          >
-            View Receipt
-          </Link>
-          <Link
-            to="/members"
-            className="bg-blue-500 text-white py-2 px-4 rounded text-center"
-          >
-            Go to Member List
-          </Link>
-        </div>
-      )}
+          {message.text && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`mb-10 p-5 rounded-2xl text-center font-bold flex items-center justify-center gap-3 border ${
+                message.type === "success" 
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                  : "bg-rose-50 text-rose-700 border-rose-100"
+              }`}
+            >
+              <span className="text-sm">{message.text}</span>
+            </motion.div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <Input label="Full Name" name="name" placeholder="John Doe" value={formData.name} onChange={handleChange} required />
+                <Input label="Phone Number" name="phone" placeholder="+91 ..." value={formData.phone} onChange={handleChange} required />
+                <Input label="Email Address" name="email" type="email" placeholder="john@example.com" value={formData.email} onChange={handleChange} />
+                
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-3 ml-1">Gender</label>
+                  <select 
+                    name="sex"
+                    value={formData.sex} 
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-[var(--border-color)] bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-indigo-500/5 outline-none font-bold text-[var(--text-primary)] transition-all cursor-pointer"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] block mb-3 ml-1">Membership Plan</label>
+                  <select 
+                    name="duration"
+                    value={formData.duration} 
+                    onChange={handleChange}
+                    className="w-full p-4 rounded-2xl border border-[var(--border-color)] bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-indigo-500/5 outline-none font-bold text-[var(--text-primary)] transition-all cursor-pointer"
+                  >
+                    <option value="1">1 Month</option>
+                    <option value="3">3 Months</option>
+                    <option value="6">6 Months</option>
+                    <option value="12">1 Year</option>
+                  </select>
+                </div>
+                
+                <Input label="Amount Paid (₹)" name="amountPaid" type="number" placeholder="5000" value={formData.amountPaid} onChange={handleChange} />
+                <Input label="Balance Due (₹)" name="due" type="number" placeholder="0" value={formData.due} onChange={handleChange} />
+                
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-3 ml-1">Member Photo</label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={(e) => setAvatar(e.target.files[0])}
+                      className="hidden"
+                      id="avatar-upload"
+                    />
+                    <label 
+                      htmlFor="avatar-upload"
+                      className="w-full p-4 rounded-2xl border border-dashed border-[var(--border-color)] bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-bold text-[var(--text-secondary)] text-sm"
+                    >
+                      {avatar ? <span className="text-indigo-600 dark:text-indigo-400">{avatar.name}</span> : <>Upload Photo</>}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="premium-button w-full py-5 bg-slate-950 dark:bg-indigo-600 text-white hover:bg-black dark:hover:bg-indigo-700 font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl shadow-slate-200 dark:shadow-none"
+            >
+              {loading ? "Saving..." : "Save Member"}
+            </button>
+          </form>
+
+          {memberCreated && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 pt-10 border-t border-slate-100 grid grid-cols-2 gap-4"
+            >
+              <Link
+                to={`/receipt/${memberCreated._id}`}
+                className="premium-button bg-indigo-600 text-white hover:bg-indigo-700 flex items-center justify-center gap-3"
+              >
+                View Invoice
+              </Link>
+              <Link
+                to="/members"
+                className="premium-button bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center gap-3"
+              >
+                Member Roster
+              </Link>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 };
+
+// Reusable Input
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] block mb-3 ml-1">{label}</label>
+    <input 
+      {...props}
+      className="w-full p-4 rounded-2xl border border-[var(--border-color)] bg-slate-50 dark:bg-slate-800/50 focus:ring-4 focus:ring-indigo-500/5 outline-none font-bold text-[var(--text-primary)] transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600" 
+    />
+  </div>
+);
 
 export default AddMember;

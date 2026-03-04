@@ -11,6 +11,8 @@ import MembersList from "./pages/MembersList";
 import Receipt from "./pages/Receipt";
 import History from "./pages/History";
 import AdminFeeManagement from "./pages/AdminFeeManagement";
+import Settings from "./pages/Settings";
+import ManageReceipts from "./pages/ManageReceipts";
 import FeeStructure from "./pages/FeeStructure";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthContext } from "./context/AuthContext";
@@ -82,6 +84,22 @@ const App = () => {
           element={
             <PrivateRoute role="admin">
               <AdminFeeManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/receipts"
+          element={
+            <PrivateRoute role="admin">
+              <ManageReceipts />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <PrivateRoute role="admin">
+              <Settings />
             </PrivateRoute>
           }
         />

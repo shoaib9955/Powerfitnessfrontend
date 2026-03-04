@@ -1,95 +1,94 @@
-import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React from "react";
+import { motion } from "framer-motion";
 import gym1 from "../assets/gym1.png";
 import gym2 from "../assets/gym2.png";
 import gym3 from "../assets/gym4.png";
 
 const About = () => {
-  useEffect(() => {
-    AOS.init({ duration: 1200, once: true, easing: "ease-in-out" });
-  }, []);
-
-  const paragraphs = [
+  const sections = [
     {
-      text: `Welcome to PowerFitness – the premier fitness destination in Boisar. 
-      Our mission is to help you achieve your health and fitness goals in a safe, motivating, 
-      and highly professional environment. Our gym is fully equipped with the latest state-of-the-art 
-      machines, free weights, and cardio equipment. We maintain the highest standards of hygiene, 
-      ensuring a clean and welcoming space for all members.`,
+      title: "Our Goal",
+      text: "PowerFitness is the best place in Boisar for serious training. We help you stay healthy and strong in a professional and clean gym.",
       bg: gym1,
+      tag: "Mission"
     },
     {
-      text: `At PowerFitness, our team of certified trainers is dedicated to guiding you through 
-      personalized fitness programs. Whether your goal is weight loss, muscle building, or overall wellness, 
-      our trainers provide expert guidance while maintaining discipline and safety. 
-      We emphasize consistency, motivation, and holistic training, so you can achieve long-term results.`,
+      title: "Expert Trainers",
+      text: "Our certified coaches focus on strength training and healthy living. We make sure every workout helps you reach your fitness goals.",
       bg: gym2,
+      tag: "Training"
     },
     {
-      text: `Our facilities include a spacious workout area, clean locker rooms, and modern equipment to 
-      ensure you have the best fitness experience. PowerFitness is committed to creating a supportive 
-      community where members feel empowered, inspired, and encouraged to push their limits. 
-      Come experience the best gym in Boisar, where your fitness journey becomes an enjoyable lifestyle.`,
+      title: "Great Facility",
+      text: "Enjoy a gym with the best equipment and a premium look. From cardio to heavy weights, we have everything you need to get fit.",
       bg: gym3,
+      tag: "Quality"
     },
   ];
 
   return (
-    <div className="pt-24 flex flex-col gap-8 relative overflow-hidden">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-r from-pink-400 via-purple-500 to-yellow-400 opacity-30 animate-gradient-x"></div>
+    <div className="bg-[var(--bg-main)] min-h-screen pt-64 pb-20">
+      <div className="max-w-7xl mx-auto px-8">
+        {/* Header Section */}
+        <div className="text-center mb-24">
+          <span className="text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-[0.4em] block mb-4">About Us</span>
+          <h1 className="text-6xl md:text-7xl font-black text-[var(--text-primary)] font-premium tracking-tight uppercase mb-8">
+            Our <span className="text-indigo-600 dark:text-indigo-400">Story</span>
+          </h1>
+          <p className="max-w-2xl mx-auto text-[var(--text-secondary)] text-lg md:text-xl font-medium leading-relaxed">
+            PowerFitness is a community where we help you become stronger and healthier through hard work and discipline.
+          </p>
+        </div>
 
-      {/* Floating Glowing Shapes */}
-      <div className="absolute w-72 h-72 bg-white/10 rounded-full top-10 left-10 animate-spin-slow blur-3xl"></div>
-      <div className="absolute w-64 h-64 bg-white/20 rounded-full bottom-20 right-20 animate-ping-slow blur-2xl"></div>
-      <div className="absolute w-48 h-48 bg-white/10 rounded-full top-1/3 right-1/4 animate-spin-slow blur-2xl"></div>
-
-      {/* Section Title */}
-      <h1
-        className="relative inline-block text-center mb-12 z-10"
-        data-aos="zoom-in"
-      >
-        <span
-          className="absolute inset-0 mx-auto my-auto w-full h-full bg-gradient-to-tr from-pink-500 via-purple-500 to-yellow-400
-          transform rotate-45 rounded-lg opacity-30 animate-pulse -z-10"
-        ></span>
-        <span
-          className="relative inline-block text-4xl md:text-6xl font-extrabold text-white tracking-wider drop-shadow-[0_0_25px_rgba(255,255,255,0.7)]"
-          style={{ fontFamily: "'Poppins', sans-serif" }}
-        >
-          About{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-green-400 to-yellow-300 animate-gradient-x">
-            PowerFitness
-          </span>
-        </span>
-      </h1>
-
-      {/* Paragraph Sections */}
-      <div className="flex flex-col gap-6 z-10 relative">
-        {paragraphs.map((para, index) => (
-          <section
-            key={index}
-            className="relative w-full h-[55vh] md:h-[65vh] flex items-center justify-center text-center px-4 overflow-hidden rounded-3xl shadow-lg"
-            style={{
-              backgroundImage: `url(${para.bg})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-            data-aos={index % 2 === 0 ? "fade-right" : "fade-left"}
-            data-aos-delay={index * 200}
-          >
-            <p
-              className="relative z-10 max-w-3xl text-white text-lg md:text-xl lg:text-2xl leading-relaxed font-bold px-4"
-              style={{
-                textShadow:
-                  "0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4)",
-              }}
+        {/* Story Sections */}
+        <div className="space-y-32">
+          {sections.map((section, index) => (
+            <motion.section
+              key={index}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-16`}
             >
-              {para.text}
-            </p>
-          </section>
-        ))}
+              <div className="w-full md:w-1/2 relative group">
+                <div className="absolute inset-0 bg-indigo-600 rounded-[3rem] rotate-3 group-hover:rotate-0 transition-transform duration-700 opacity-10"></div>
+                <div className="relative rounded-[3rem] overflow-hidden shadow-2xl z-10 aspect-video">
+                  <img
+                    src={section.bg}
+                    alt={section.title}
+                    className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
+                </div>
+              </div>
+
+              <div className="w-full md:w-1/2 text-center md:text-left">
+                <span className="text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-[0.4em] block mb-4">{section.tag}</span>
+                <h2 className="text-4xl md:text-5xl font-black text-[var(--text-primary)] font-premium tracking-tight uppercase mb-6 leading-tight">
+                  {section.title}
+                </h2>
+                <p className="text-[var(--text-secondary)] text-lg md:text-xl leading-relaxed font-medium">
+                  {section.text}
+                </p>
+              </div>
+            </motion.section>
+          ))}
+        </div>
+
+        {/* Footer Accent */}
+        <div className="mt-40 text-center">
+          <div className="glass-morphism py-20 px-8 rounded-[4rem]">
+             <h3 className="text-3xl font-black text-[var(--text-primary)] font-premium uppercase tracking-tighter mb-4">Start Your Journey</h3>
+             <p className="text-[var(--text-secondary)] font-bold text-xs uppercase tracking-[0.3em] mb-10">Visit our gym in Boisar today</p>
+             <button
+               onClick={() => window.location.href = '/fees'}
+               className="premium-button bg-slate-950 dark:bg-indigo-600 text-white hover:bg-black dark:hover:bg-indigo-700 px-12 py-5 font-black uppercase text-xs tracking-widest"
+             >
+               Join Us Now
+             </button>
+          </div>
+        </div>
       </div>
     </div>
   );

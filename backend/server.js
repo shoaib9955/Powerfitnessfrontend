@@ -1,7 +1,7 @@
 // backend/server.js
+import "dotenv/config"; 
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -20,7 +20,6 @@ import createAdmin from "./utils/createAdmin.js";
 // -------------------- Env Config --------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config();
 
 const app = express();
 
@@ -55,14 +54,26 @@ app.use(limiter);
 // -------------------- CORS --------------------
 const allowedOrigins = [
   "http://localhost:5173", // local dev
-  "https://powerfitness13.onrender.com", // deployed frontend
+  "http://localhost:5174",
+  "https://powerfitness13.onrender.com", // default or previous deployed frontend
 ];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+if (process.env.ALLOWED_ORIGINS) {
+  allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(","));
+}
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin))
         return callback(null, true);
+      // For Vercel deployments where the preview URL changes, you may want to return true for any origin,
+      // but restricting is safer. Returning true dynamically for vercel domains:
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      
       callback(new Error(`CORS: Not allowed - ${origin}`));
     },
     credentials: true, // allow cookies or auth headers
@@ -76,10 +87,16 @@ app.use("/api/receipts", receiptRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/fees", feeRoutes);
 
-// -------------------- Serve Frontend --------------------
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// -------------------- Serve Frontend (if built together) --------------------
+const frontendDistPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendDistPath));
+
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
+    if (err) {
+      res.status(404).send("API is running. Frontend is deployed separately.");
+    }
+  });
 });
 
 // -------------------- MongoDB Connection --------------------

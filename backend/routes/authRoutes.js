@@ -1,6 +1,6 @@
 // routes/authRoutes.js
 import express from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import User from "../models/userModel.js";
@@ -129,6 +129,65 @@ router.get("/profile", authMiddleware, async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ------------------ Settings (protected update) ------------------
+router.put("/settings", authMiddleware, async (req, res) => {
+  try {
+    const { username, currentPassword, newPassword, emailForReceipts } = req.body;
+    
+    // Find absolute user (need password field)
+    // authMiddleware sets req.user to exclude password, so we must query again explicitly requesting it
+    const user = await User.findById(req.user.id).select("+password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Validate current password to authorize changes
+    if (!currentPassword) {
+       return res.status(400).json({ message: "Current password is required to save changes" });
+    }
+    
+    // Check if user has a password set (some oauth users might not, though not applicable here)
+    if (!user.password) {
+       return res.status(400).json({ message: "User password not found in database" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+       return res.status(401).json({ message: "Incorrect current password" });
+    }
+
+    // Update Username
+    if (username && username !== user.username) {
+       const exists = await User.findOne({ username });
+       if (exists) return res.status(400).json({ message: "Username already taken" });
+       user.username = username;
+    }
+
+    // Update Email
+    if (emailForReceipts !== undefined) {
+       user.emailForReceipts = emailForReceipts;
+    }
+
+    // Update Password
+    if (newPassword && newPassword.length >= 6) {
+       // Do not hash here, the userModel.js pre("save") hook will hash it
+       user.password = newPassword;
+    }
+
+    await user.save();
+    
+    // Issue a new token in case the username changed
+    const token = jwt.sign(
+      { id: user._id, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ message: "Settings updated successfully", token, username: user.username });
+  } catch (err) {
+    logger.error(`Settings update error: ${err.message}`);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
